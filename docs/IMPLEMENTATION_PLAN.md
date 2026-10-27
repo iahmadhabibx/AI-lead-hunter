@@ -1,0 +1,77 @@
+# Implementation Plan
+
+## Repository findings (2026-10-27)
+
+- Repository was **empty** (no source, no lockfile, no prior docs).
+- Git initialized during Phase 0 bootstrap.
+- Tooling available: Node 22, npm 10, pnpm 9.15 (via corepack), Docker 29 + Compose v5, Ollama binary present, Python 3.12.
+- No secrets present to preserve.
+- Host port 5432 occupied by another container → local Compose Postgres on **5433**.
+
+## Phases
+
+### Phase 0 — Engineering foundation ✅
+
+**Acceptance criteria**
+
+- [x] pnpm monorepo with `web`, `api`, `worker`, and foundation packages
+- [x] `.env.example` + startup env validation
+- [x] Docker Compose for Postgres + Redis
+- [x] Drizzle schema + migrations for users, sessions, audit_events, background_tasks
+- [x] NestJS health/ready + auth register/login/logout/me
+- [x] Structured logging + request IDs
+- [x] Next.js app shell with landing + auth pages wired to API
+- [x] Worker process boots and can connect to Redis
+- [x] Unit/integration tests for auth/hashing/health; CI workflow
+- [x] Documentation set complete and PROGRESS updated
+
+### Phase 1 — CV onboarding vertical slice (next)
+
+Upload → extract → AI structured profile → review UI → versioned approved profile → statuses/errors → tests.
+
+**Acceptance criteria**
+
+- [ ] PDF/DOCX upload with content validation + private storage
+- [ ] Async processing + task status API
+- [ ] Canonical candidate profile schema (versioned)
+- [ ] Mock AI adapter (tests) + Ollama adapter (optional local)
+- [ ] Review/correct UI; immutable approved versions
+- [ ] Integration + e2e path for register → upload → review → approve
+
+### Phase 2 — Connectors + normalization
+
+Greenhouse/Lever board connectors (verified), registry, normalize, dedupe, freshness.
+
+### Phase 3 — Matching
+
+Hard filters, weighted components, explanations, persisted breakdowns, regression tests.
+
+### Phase 4 — Feedback
+
+Auditable events, deterministic preference updates, reset UI.
+
+### Phase 5 — Application assistance + tracking
+
+Grounded drafts, editor, application records, official apply URL only.
+
+### Phase 6 — Hardening + deployment
+
+Export/delete, RLS coverage, rate limits, backups, production runbook.
+
+## Dependencies between phases
+
+Phase 1 depends on Phase 0 auth + storage + tasks.  
+Phase 3 depends on Phase 1 profiles + Phase 2 jobs.  
+Phase 5 depends on Phase 1 + 3.
+
+## Commands
+
+```bash
+pnpm install
+docker compose -f infra/docker/docker-compose.yml up -d
+pnpm db:migrate
+pnpm build
+pnpm test
+pnpm test:integration
+pnpm dev
+```

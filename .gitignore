@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.next/
+coverage/
+.turbo/
+*.tsbuildinfo
+.env
+.env.local
+.env.*.local
+!.env.example
+uploads/
+tmp/
+.DS_Store
+*.log
+.idea/
+.vscode/
+drizzle/meta/_journal.json.bak

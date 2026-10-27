@@ -1,0 +1,26 @@
+{
+  "name": "ai-job-hunter",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter @aijh/api --filter @aijh/worker --filter @aijh/web dev",
+    "build": "pnpm -r --filter @aijh/contracts --filter @aijh/observability --filter @aijh/security --filter @aijh/database build && pnpm -r --filter @aijh/api --filter @aijh/worker --filter @aijh/web build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r --if-present lint",
+    "test": "pnpm -r --if-present test",
+    "test:integration": "pnpm --filter @aijh/api test:integration",
+    "db:generate": "pnpm --filter @aijh/database generate",
+    "db:migrate": "pnpm --filter @aijh/database migrate",
+    "db:studio": "pnpm --filter @aijh/database studio"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0",
+    "dotenv": "^18.0.9",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}

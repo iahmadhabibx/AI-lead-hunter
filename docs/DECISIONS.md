@@ -71,10 +71,25 @@
 - **Decision:** Fail clearly when PDF/DOCX yields no text; OCR later.
 - **Consequences:** Image-only CVs cannot be processed until OCR lands.
 
+## ADR-011: Employer-board connectors only (Greenhouse + Lever)
+
+- **Status:** Accepted (Phase 2, docs verified 2026-10-27)
+- **Context:** Product requires permitted sources without scraping or invented global search.
+- **Decision:** Integrate public Greenhouse Job Board GET and Lever Postings GET for **configured** `board_token` / `site` values only. Document limitations; no Harvest/Lever v1 auth APIs in Phase 2.
+- **Consequences:** Empty catalog until operators configure boards; CI uses mock HTTP fixtures.
+
+## ADR-012: Missing listings → stale, not closed
+
+- **Status:** Accepted
+- **Context:** Temporary API gaps must not look like confirmed closures.
+- **Decision:** After a successful discover, IDs absent from the page set become `stale`. `closed` reserved for explicit confirmation paths later.
+- **Consequences:** Matching (Phase 3) must treat stale separately from active.
+
 ## Unresolved
 
 - Default production Ollama model selection (size/quality tradeoff still open).
 - Production object storage vendor (S3-compatible interface first).
 - Password-reset email delivery provider (local: console/dev sink).
 - Product display name currently **ForgePath** in the web UI (code name); confirm final branding later.
+- Formal legal review of caching/redistribution of third-party job text.
 

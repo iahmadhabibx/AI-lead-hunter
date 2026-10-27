@@ -38,11 +38,20 @@ Timestamps: **UTC** (`timestamptz`). Primary keys: **UUID v4** unless noted.
 
 RLS + `FORCE ROW LEVEL SECURITY` on all three; access via `withTenantContext`.
 
+## Phase 2 catalog tables (shared — not per-user RLS)
+
+| Table | Purpose |
+| --- | --- |
+| `job_sources` | Configured boards/sites, health + ingest metadata |
+| `source_jobs` | Source-native IDs, raw payload, status, timestamps |
+| `canonical_jobs` | Normalized listings + content hash + freshness |
+| `job_source_links` | Many-to-many source ↔ canonical |
+
 ## Later tables (designed; migrate in later phases)
 
 users-owned: `preferences` (extended), `feedback_events`, `saved_jobs`, `applications`, `generated_documents`, `match_results`
 
-shared/catalog: `job_sources`, `source_jobs`, `canonical_jobs`, `job_source_links`, `skills`, `job_skills`
+shared/catalog: `skills`, `job_skills`
 
 ## Multi-tenancy model
 

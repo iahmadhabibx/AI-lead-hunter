@@ -7,6 +7,7 @@ import { HealthModule } from './health/health.module';
 import { ProfileModule } from './profile/profile.module';
 import { QueueModule } from './queue/queue.module';
 import { RedisModule } from './redis/redis.module';
+import { SourcesModule } from './sources/sources.module';
 import { TasksModule } from './tasks/tasks.module';
 
 @Module({
@@ -20,6 +21,7 @@ import { TasksModule } from './tasks/tasks.module';
     CvModule,
     TasksModule,
     ProfileModule,
+    SourcesModule,
   ],
 })
 export class AppModule {}

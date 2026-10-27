@@ -7,6 +7,55 @@ Standing rules for this file:
 - Record **actual commands and results**. Do not claim PASS from generated files alone.
 - A phase is complete only when features work, tests pass, and limitations are documented (`AGENTS.md` → Phase completion discipline).
 
+## 2026-10-27 — Phase 2 connectors + normalization (DoD)
+
+### Verdict
+
+**Phase 2 acceptance criteria: PASS.** Matching engine **not** started.
+
+### Docs verification (before coding)
+
+| Source | Official docs used | Result |
+| --- | --- | --- |
+| Greenhouse Job Board API | https://docs.greenhouse.io/job-board.html | Public GET per `board_token`; no auth for reads |
+| Lever Postings API | https://github.com/lever/postings-api | Public GET per `SITE`; `mode=json`; EU host optional |
+
+Neither API is global job search. Empty `JOB_SOURCES_JSON` ⇒ no invented listings.
+
+### Acceptance evidence
+
+| Criterion | Evidence |
+| --- | --- |
+| Typed connector framework | `@aijh/job-connectors` |
+| Board registry | `JOB_SOURCES_JSON` + `createConnectorRegistry` |
+| Greenhouse + Lever | Adapters + capabilities `isGlobalSearch: false` |
+| Normalize / hash / dedupe / freshness | `@aijh/job-normalization` + migration `0003_job_catalog` |
+| Retries + health | `fetchJsonWithRetry`; source health fields; `GET /sources` |
+| Tests | Connector/normalization unit + sources ingest integration (mock HTTP) |
+
+### Commands executed (actual)
+
+| Command | Result |
+| --- | --- |
+| `pnpm db:migrate` | pass — `0003_job_catalog` |
+| `pnpm test` | pass (includes job-connectors 4, job-normalization 2, contracts job config) |
+| `pnpm test:integration` | pass — **7** tests (auth, tenant, CV, **sources×2**) |
+| `pnpm build` | pass |
+| `pnpm typecheck` | pass |
+
+### Limitations
+
+- No live network required in CI; live boards only when configured
+- Redistribution/commercial-use of third-party JD text needs legal review before production marketing claims
+- `closed` status not auto-set from discover misses (stale only)
+- Matching / ranking not implemented
+
+### Next
+
+Phase 3 — matching engine + explanations (uses approved profiles + active canonical jobs).
+
+---
+
 ## 2026-10-27 — Phase 1 CV onboarding (DoD)
 
 ### Verdict

@@ -46,14 +46,20 @@ OpenAPI: served at `/api/v1/docs` (Swagger UI) when API is running.
 
 Long-running CV processing returns `{ documentId, taskId, status }` and clients poll `/tasks/:id`.
 
+## Phase 2 endpoints
+
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| GET | `/sources` | yes | Configured board registry + health/ingest persistence |
+| POST | `/sources/discover` | yes | Enqueue discovery (`?sourceKey=` optional) → `{ taskId }` |
+| GET | `/sources/jobs` | yes | Active canonical jobs from ingested boards (empty if none) |
+
 ## Planned endpoints (later phases)
 
 - Preferences (beyond profile preferences block)
-- Search create/progress
-- Jobs list/detail + match explanations
+- Search create/progress / match explanations
 - Save/unsave, feedback
 - Application drafts + tracking
-- Source status
 - Account export + deletion
 
 ## Pagination

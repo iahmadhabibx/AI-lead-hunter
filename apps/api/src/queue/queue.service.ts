@@ -4,6 +4,7 @@ import IORedis from 'ioredis';
 import { ConfigService } from '../config/config.service';
 
 export const CV_PROCESS_QUEUE = 'cv-process';
+export const JOBS_DISCOVER_QUEUE = 'jobs-discover';
 
 export type CvProcessJobData = {
   userId: string;
@@ -11,10 +12,17 @@ export type CvProcessJobData = {
   taskId: string;
 };
 
+export type JobsDiscoverJobData = {
+  sourceKey?: string;
+  triggeredBy?: string;
+  taskId?: string;
+};
+
 @Injectable()
 export class QueueService implements OnModuleDestroy {
   private readonly connection: IORedis;
   readonly cvProcessQueue: Queue<CvProcessJobData>;
+  readonly jobsDiscoverQueue: Queue<JobsDiscoverJobData>;
 
   constructor(@Inject(ConfigService) config: ConfigService) {
     this.connection = new IORedis(config.env.REDIS_URL, {
@@ -23,6 +31,10 @@ export class QueueService implements OnModuleDestroy {
     this.cvProcessQueue = new Queue<CvProcessJobData>(CV_PROCESS_QUEUE, {
       connection: this.connection,
     });
+    this.jobsDiscoverQueue = new Queue<JobsDiscoverJobData>(
+      JOBS_DISCOVER_QUEUE,
+      { connection: this.connection },
+    );
   }
 
   async enqueueCvProcess(data: CvProcessJobData): Promise<string> {
@@ -36,8 +48,21 @@ export class QueueService implements OnModuleDestroy {
     return String(job.id);
   }
 
+  async enqueueJobsDiscover(data: JobsDiscoverJobData): Promise<string> {
+    const job = await this.jobsDiscoverQueue.add('discover', data, {
+      removeOnComplete: 100,
+      removeOnFail: 200,
+      attempts: 2,
+      backoff: { type: 'exponential', delay: 5000 },
+    });
+    return String(job.id);
+  }
+
   async onModuleDestroy(): Promise<void> {
-    await this.cvProcessQueue.close();
+    await Promise.all([
+      this.cvProcessQueue.close(),
+      this.jobsDiscoverQueue.close(),
+    ]);
     await this.connection.quit();
   }
 }

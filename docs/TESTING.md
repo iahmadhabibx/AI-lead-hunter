@@ -46,3 +46,11 @@ Exact scripts are defined in the root `package.json` as they land.
 - Tenant RLS remains covered
 
 Fixture: `tests/fixtures/sample-cv.docx` (demo CV text, not a real person's private data).
+
+## Phase 2 coverage targets
+
+- Job source JSON config parsing
+- Greenhouse/Lever connectors with **mock HTTP** (no live network in CI)
+- Normalization + content hash stability
+- Idempotent ingest into catalog tables
+- `GET /sources` does not invent jobs when catalog empty

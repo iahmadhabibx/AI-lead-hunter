@@ -43,9 +43,22 @@ Upload → extract → AI structured profile → review UI → versioned approve
 
 See `docs/PROGRESS.md` for command results. Job discovery is **not** in this phase.
 
-### Phase 2 — Connectors + normalization
+### Phase 2 — Connectors + normalization ✅ PASS (verified 2026-10-27)
 
-Greenhouse/Lever board connectors (verified), registry, normalize, dedupe, freshness.
+Greenhouse/Lever board connectors (docs re-verified), registry, normalize, dedupe, freshness.
+
+**Acceptance criteria**
+
+- [x] Typed connector framework (`discover` / `fetchJob` / `healthCheck` / `getCapabilities`)
+- [x] Configurable employer-board registry via `JOB_SOURCES_JSON` (not global search)
+- [x] Greenhouse + Lever adapters after verifying official public GET docs
+- [x] Normalized jobs, attribution, content hashes, idempotent ingestion
+- [x] Dedup + freshness/status (`active`/`stale`/`closed`/`unknown`)
+- [x] Bounded retries + source health reporting
+- [x] Connector/normalization unit tests + ingest integration with mock transport
+- [x] Matching engine **not** implemented (Phase 3)
+
+See `docs/PROGRESS.md` and `docs/JOB_CONNECTORS.md`.
 
 ### Phase 3 — Matching
 

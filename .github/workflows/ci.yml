@@ -53,9 +53,10 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @aijh/contracts --filter @aijh/observability --filter @aijh/security --filter @aijh/ai-runtime --filter @aijh/cv-processing --filter @aijh/database build
+      - run: pnpm --filter @aijh/contracts --filter @aijh/observability --filter @aijh/security --filter @aijh/ai-runtime --filter @aijh/cv-processing --filter @aijh/job-connectors --filter @aijh/job-normalization --filter @aijh/database build
       - run: |
           echo "AI_PROVIDER=mock" >> $GITHUB_ENV
+          echo "JOB_SOURCES_JSON=[]" >> $GITHUB_ENV
       - run: pnpm db:migrate
       - run: pnpm test
       - run: pnpm --filter @aijh/api --filter @aijh/worker build

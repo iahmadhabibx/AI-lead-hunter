@@ -3,8 +3,13 @@ import { createLogger } from '@aijh/observability';
 import { Queue, Worker } from 'bullmq';
 import IORedis from 'ioredis';
 import { handleCvProcessJob, type CvProcessJobData } from './cv-process';
+import {
+  handleJobsDiscover,
+  type JobsDiscoverJobData,
+} from './job-ingest';
 
 const CV_PROCESS_QUEUE = 'cv-process';
+const JOBS_DISCOVER_QUEUE = 'jobs-discover';
 
 async function main() {
   const env = parseAppEnv(process.env);
@@ -26,6 +31,21 @@ async function main() {
       removeOnComplete: 20,
       removeOnFail: 50,
       repeat: { every: 60_000 },
+    },
+  );
+
+  const jobsDiscoverQueue = new Queue<JobsDiscoverJobData>(JOBS_DISCOVER_QUEUE, {
+    connection,
+  });
+  // Periodic discovery when sources are configured; no-op if JOB_SOURCES_JSON empty.
+  await jobsDiscoverQueue.add(
+    'discover-all',
+    { triggeredBy: 'schedule' },
+    {
+      jobId: 'discover-all-repeat',
+      removeOnComplete: 20,
+      removeOnFail: 50,
+      repeat: { every: 60 * 60 * 1000 },
     },
   );
 
@@ -51,18 +71,37 @@ async function main() {
     { connection, concurrency: 2 },
   );
 
+  const jobsWorker = new Worker<JobsDiscoverJobData>(
+    JOBS_DISCOVER_QUEUE,
+    async (job) => {
+      logger.info({ jobId: job.id, data: job.data }, 'Running job discovery');
+      const result = await handleJobsDiscover({
+        env,
+        logger,
+        data: job.data,
+      });
+      return result;
+    },
+    { connection, concurrency: env.JOB_INGEST_CONCURRENCY },
+  );
+
   cvWorker.on('failed', (job, err) => {
     logger.error({ jobId: job?.id, err }, 'CV job failed');
   });
+  jobsWorker.on('failed', (job, err) => {
+    logger.error({ jobId: job?.id, err }, 'Jobs discover failed');
+  });
 
-  logger.info('Worker started (heartbeat + cv-process)');
+  logger.info('Worker started (heartbeat + cv-process + jobs-discover)');
 
   const shutdown = async () => {
     logger.info('Shutting down worker');
     await Promise.all([
       heartbeatWorker.close(),
       cvWorker.close(),
+      jobsWorker.close(),
       heartbeatQueue.close(),
+      jobsDiscoverQueue.close(),
     ]);
     await connection.quit();
     process.exit(0);

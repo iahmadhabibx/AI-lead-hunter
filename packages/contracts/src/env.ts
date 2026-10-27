@@ -19,6 +19,10 @@ export const AppEnvSchema = z.object({
   OLLAMA_BASE_URL: z.string().url().default('http://127.0.0.1:11434'),
   OLLAMA_MODEL: z.string().optional(),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
+  /** JSON array or `{ "sources": [...] }` of configured employer boards (not global search). */
+  JOB_SOURCES_JSON: z.string().optional(),
+  JOB_STALE_AFTER_HOURS: z.coerce.number().int().positive().default(72),
+  JOB_INGEST_CONCURRENCY: z.coerce.number().int().positive().default(2),
 });
 
 export type AppEnv = z.infer<typeof AppEnvSchema>;

@@ -62,9 +62,16 @@ export default function AppHomePage() {
       <h1>Welcome{user.displayName ? `, ${user.displayName}` : ''}</h1>
       <p className="muted">Signed in as {user.email}</p>
       {error ? <div className="form-error" role="alert">{error}</div> : null}
+      <div className="hero-actions" style={{ marginTop: '1.5rem' }}>
+        <Link className="btn btn-primary" href="/app/cv">
+          Upload CV
+        </Link>
+        <Link className="btn btn-secondary" href="/app/profile">
+          Review profile
+        </Link>
+      </div>
       <div className="empty">
-        CV upload and job matching arrive in the next phases. Your account,
-        session, and API foundation are live.
+        Job discovery is not available yet. Complete your CV profile first.
       </div>
     </main>
   );

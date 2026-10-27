@@ -1,3 +1,4 @@
 export * from './schema/index';
 export * from './client';
 export * from './tenant';
+export * from './auth-sessions';

@@ -23,7 +23,10 @@
 
 - Never trust client-supplied `userId`
 - Every private resource resolved via session user
-- Expand RLS as tables land
+- Runtime DB role: `aijh_app` (not the migration owner)
+- RLS on `background_tasks` keyed by `app.current_user_id` (`withTenantContext`)
+- Session create/lookup/revoke via `SECURITY DEFINER` functions (no open session DML for the app role)
+- Expand RLS as additional private tables land
 
 ## Data lifecycle
 
@@ -31,12 +34,14 @@
 - Deletion: account + files + derived personal data; document lawful retention exceptions when known
 - Do **not** claim GDPR/CCPA compliance without jurisdiction review and implemented controls
 
-## Uploads (Phase 1)
+## Uploads (Phase 1 — implemented)
 
-- Validate magic bytes, not only MIME/extension
-- Size and processing limits
-- Malformed file handling; temp file cleanup
-- CV content is untrusted
+- Validate magic bytes, not only MIME/extension (`detectCvFormat`)
+- Size limits via `MAX_UPLOAD_BYTES`
+- Private storage under `STORAGE_ROOT/{userId}/{documentId}.{ext}` (mode 0600)
+- Malformed / unsupported files → `VALIDATION_ERROR`
+- CV content treated as untrusted input to the AI adapter
+- OCR not enabled; empty-text documents fail with an actionable error
 
 ## AI (Phase 1+)
 
@@ -52,4 +57,8 @@
 
 ## Known gaps (track in PROGRESS)
 
-Phase 0 establishes auth + session foundation. Full CSRF strategy for cookie+SPA, password reset, and production secrets management land in hardening phase unless needed earlier.
+- Full CSRF strategy for cookie+SPA (SameSite=Lax mitigates basic cross-site POST; deepen in hardening)
+- Password reset + email delivery
+- Production secrets management / TLS termination
+- Auth endpoint rate limits (documented for hardening)
+- Users/audit tables are not RLS-scoped (login needs email lookup; audit writes are server-side)

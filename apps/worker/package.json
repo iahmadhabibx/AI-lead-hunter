@@ -10,9 +10,13 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@aijh/ai-runtime": "workspace:*",
     "@aijh/contracts": "workspace:*",
+    "@aijh/cv-processing": "workspace:*",
+    "@aijh/database": "workspace:*",
     "@aijh/observability": "workspace:*",
     "bullmq": "^5.34.5",
+    "drizzle-orm": "^0.38.3",
     "ioredis": "^5.4.2"
   },
   "devDependencies": {

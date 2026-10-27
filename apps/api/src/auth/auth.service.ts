@@ -6,14 +6,20 @@ import {
   type RegisterRequest,
   type UserPublic,
 } from '@aijh/contracts';
-import { auditEvents, sessions, users } from '@aijh/database';
+import {
+  auditEvents,
+  createAuthSession,
+  findValidAuthSession,
+  revokeAuthSession,
+  users,
+} from '@aijh/database';
 import {
   generateOpaqueToken,
   hashPassword,
   hashToken,
   verifyPassword,
 } from '@aijh/security';
-import { and, eq, gt, isNull } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { AppHttpException } from '../common/app-http.exception';
 import { ConfigService } from '../config/config.service';
 import { DatabaseService } from '../database/database.service';
@@ -103,10 +109,7 @@ export class AuthService {
   async logout(sessionToken: string | undefined): Promise<void> {
     if (!sessionToken) return;
     const tokenHash = hashToken(sessionToken);
-    await this.dbService.db
-      .update(sessions)
-      .set({ revokedAt: new Date() })
-      .where(eq(sessions.tokenHash, tokenHash));
+    await revokeAuthSession(this.dbService.db, tokenHash);
   }
 
   async resolveUserFromSession(
@@ -114,21 +117,14 @@ export class AuthService {
   ): Promise<UserPublic | null> {
     if (!sessionToken) return null;
     const tokenHash = hashToken(sessionToken);
-    const row = await this.dbService.db.query.sessions.findFirst({
-      where: and(
-        eq(sessions.tokenHash, tokenHash),
-        isNull(sessions.revokedAt),
-        gt(sessions.expiresAt, new Date()),
-      ),
-    });
-
+    const row = await findValidAuthSession(this.dbService.db, tokenHash);
     if (!row) return null;
-
-    const user = await this.dbService.db.query.users.findFirst({
-      where: eq(users.id, row.userId),
-    });
-    if (!user || user.status !== 'active') return null;
-    return this.toPublic(user);
+    return {
+      id: row.userId,
+      email: row.email,
+      displayName: row.displayName,
+      createdAt: row.userCreatedAt.toISOString(),
+    };
   }
 
   cookieOptions() {
@@ -152,7 +148,7 @@ export class AuthService {
     const expiresAt = new Date(
       Date.now() + this.config.env.SESSION_TTL_SECONDS * 1000,
     );
-    await this.dbService.db.insert(sessions).values({
+    await createAuthSession(this.dbService.db, {
       userId,
       tokenHash,
       expiresAt,

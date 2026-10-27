@@ -1,6 +1,5 @@
 import { sql } from 'drizzle-orm';
 import type { Database } from './client';
-import { TENANT_SETTING_KEY } from '@aijh/security';
 
 /**
  * Set PostgreSQL session variable used by RLS policies.
@@ -13,7 +12,7 @@ export async function withTenantContext<T>(
 ): Promise<T> {
   return db.transaction(async (tx) => {
     await tx.execute(
-      sql`select set_config(${TENANT_SETTING_KEY}, ${userId}, true)`,
+      sql`select set_config('app.current_user_id', ${userId}, true)`,
     );
     return fn(tx as unknown as Database);
   });

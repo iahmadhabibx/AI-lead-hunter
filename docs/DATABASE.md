@@ -14,8 +14,10 @@ Timestamps: **UTC** (`timestamptz`). Primary keys: **UUID v4** unless noted.
 ## ORM and migrations
 
 - **Drizzle ORM** + `drizzle-kit` for version-controlled SQL migrations in `packages/database/migrations`.
-- Application connects with a non-owner role (`app_user`) after bootstrap.
-- Bootstrap/migrations may use `DB_ADMIN_URL`; runtime uses `DATABASE_URL` (app role).
+- Application connects with a non-owner role (`aijh_app`) after bootstrap.
+- Bootstrap/migrations use `DB_ADMIN_URL` (owner); runtime uses `DATABASE_URL` (`aijh_app`, subject to RLS).
+- Session create/lookup/revoke go through `SECURITY DEFINER` functions so login works without a tenant setting.
+- `background_tasks` (and later private tables) require `app.current_user_id` via `withTenantContext`.
 
 ## Phase 0 core tables
 
@@ -26,9 +28,19 @@ Timestamps: **UTC** (`timestamptz`). Primary keys: **UUID v4** unless noted.
 | `audit_events` | Security/audit trail (minimal PII) |
 | `background_tasks` | Long-running task metadata (status, type, owner) |
 
+## Phase 1 tables
+
+| Table | Purpose |
+| --- | --- |
+| `cv_documents` | Private uploaded CVs, status, storage path, content hash |
+| `candidate_profiles` | One profile shell per user + `active_version_id` |
+| `candidate_profile_versions` | Versioned JSON payloads; `pending_review` / `approved` / `superseded` |
+
+RLS + `FORCE ROW LEVEL SECURITY` on all three; access via `withTenantContext`.
+
 ## Later tables (designed; migrate in later phases)
 
-users-owned: `cv_documents`, `candidate_profiles`, `candidate_profile_versions`, `preferences`, `feedback_events`, `saved_jobs`, `applications`, `generated_documents`, `match_results`
+users-owned: `preferences` (extended), `feedback_events`, `saved_jobs`, `applications`, `generated_documents`, `match_results`
 
 shared/catalog: `job_sources`, `source_jobs`, `canonical_jobs`, `job_source_links`, `skills`, `job_skills`
 

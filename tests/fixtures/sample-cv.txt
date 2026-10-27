@@ -1,0 +1,9 @@
+Ada Lovelace
+ada@example.com
+
+Skills
+TypeScript, PostgreSQL, NestJS, React
+
+Experience
+Software Engineer - Analytical Engines
+Built calculating engines and documentation.

@@ -10,7 +10,7 @@
 
 ## Phases
 
-### Phase 0 — Engineering foundation ✅
+### Phase 0 — Engineering foundation ✅ PASS (audited 2026-10-27)
 
 **Acceptance criteria**
 
@@ -24,19 +24,24 @@
 - [x] Worker process boots and can connect to Redis
 - [x] Unit/integration tests for auth/hashing/health; CI workflow
 - [x] Documentation set complete and PROGRESS updated
+- [x] Runtime uses non-owner DB role with verified tenant RLS on private tables
 
-### Phase 1 — CV onboarding vertical slice (next)
+See `docs/PROGRESS.md` for command transcripts and DoD checklist.
+
+### Phase 1 — CV onboarding vertical slice ✅ PASS (verified 2026-10-27)
 
 Upload → extract → AI structured profile → review UI → versioned approved profile → statuses/errors → tests.
 
 **Acceptance criteria**
 
-- [ ] PDF/DOCX upload with content validation + private storage
-- [ ] Async processing + task status API
-- [ ] Canonical candidate profile schema (versioned)
-- [ ] Mock AI adapter (tests) + Ollama adapter (optional local)
-- [ ] Review/correct UI; immutable approved versions
-- [ ] Integration + e2e path for register → upload → review → approve
+- [x] PDF/DOCX upload with content validation + private storage
+- [x] Async processing + task status API
+- [x] Canonical candidate profile schema (versioned)
+- [x] Mock AI adapter (tests) + Ollama adapter (optional local)
+- [x] Review/correct UI; immutable approved versions
+- [x] Integration path for register → upload → review → approve (Playwright e2e deferred; API integration covers the vertical slice)
+
+See `docs/PROGRESS.md` for command results. Job discovery is **not** in this phase.
 
 ### Phase 2 — Connectors + normalization
 

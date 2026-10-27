@@ -2,6 +2,24 @@
 
 Engineering rules for humans and AI agents working in this repository.
 
+**Keep this file and `docs/PROGRESS.md` in the repository for the entire life of the project.** They carry engineering rules and a verified record of what is actually implemented across sessions. Do not delete, empty, or replace them with aspirational status.
+
+## Phase completion discipline
+
+A phase is **not** complete because files, scaffolds, or UI shells were generated.
+
+A phase is complete only when **all** of the following are true:
+
+1. Acceptance criteria in `docs/IMPLEMENTATION_PLAN.md` are met by working behavior.
+2. The feature works end-to-end for that phase (not merely represented in code or UI).
+3. Input validation and authorization are implemented where the phase touches private data.
+4. Relevant tests were **executed** and passed; record the commands and outcomes in `docs/PROGRESS.md`.
+5. The project builds where applicable; migrations are consistent if schema changed.
+6. Documentation matches the implementation.
+7. Remaining limitations are stated honestly in `docs/PROGRESS.md`.
+
+Never mark a phase ✅ / PASS from file presence alone. That discipline separates a serious SaaS product from a prototype that only looks impressive.
+
 ## Product
 
 Multi-tenant SaaS that helps users upload CVs, extract structured profiles, discover jobs from permitted sources, match with explanations, collect feedback, and prepare application materials with human review.

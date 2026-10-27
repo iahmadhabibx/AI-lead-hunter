@@ -35,3 +35,14 @@ Exact scripts are defined in the root `package.json` as they land.
 - Password hashing + session auth flows (integration)
 - Health/ready endpoints
 - Migration apply on clean database
+
+## Phase 1 coverage targets
+
+- Experience month calculation (overlap collapse)
+- File magic-byte validation + DOCX fixture extraction
+- Mock AI deterministic extraction
+- Integration: register → upload DOCX → process (mock) → draft edit → approve
+- Invalid upload rejected (400)
+- Tenant RLS remains covered
+
+Fixture: `tests/fixtures/sample-cv.docx` (demo CV text, not a real person's private data).

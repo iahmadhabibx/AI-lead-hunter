@@ -50,9 +50,30 @@
 - **Decision:** Compose maps container `5432` → host `5433`; `.env.example` uses 5433.
 - **Consequences:** CI still uses service port 5432 inside GitHub Actions networking.
 
+## ADR-008: App role + SECURITY DEFINER session helpers
+
+- **Status:** Accepted (Phase 0 audit)
+- **Context:** Owner-role runtime bypassed RLS; open session policies were unsafe.
+- **Decision:** `DATABASE_URL` uses `aijh_app`; session create/find/revoke via `auth_*` SECURITY DEFINER functions; `background_tasks` RLS requires `app.current_user_id`.
+- **Consequences:** Auth works without tenant context at login; private tables must use `withTenantContext`.
+
+## ADR-009: Mock AI default; Ollama optional
+
+- **Status:** Accepted (Phase 1)
+- **Context:** CI and zero-budget local must not require model downloads.
+- **Decision:** `AI_PROVIDER=mock` by default; Ollama adapter available when `OLLAMA_MODEL` is set. No paid API fallback.
+- **Consequences:** Extraction quality in mock mode is heuristic; production needs dedicated inference.
+
+## ADR-010: OCR deferred
+
+- **Status:** Accepted (Phase 1)
+- **Context:** Scanned PDFs need OCR; adding Tesseract increases ops complexity.
+- **Decision:** Fail clearly when PDF/DOCX yields no text; OCR later.
+- **Consequences:** Image-only CVs cannot be processed until OCR lands.
+
 ## Unresolved
 
-- Exact default Ollama model for extraction (decide in Phase 1 after size/quality check).
+- Default production Ollama model selection (size/quality tradeoff still open).
 - Production object storage vendor (S3-compatible interface first).
 - Password-reset email delivery provider (local: console/dev sink).
 - Product display name currently **ForgePath** in the web UI (code name); confirm final branding later.

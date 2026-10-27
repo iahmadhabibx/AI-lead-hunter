@@ -2,6 +2,9 @@ import { parseAppEnv } from '@aijh/contracts';
 import { createLogger } from '@aijh/observability';
 import { Queue, Worker } from 'bullmq';
 import IORedis from 'ioredis';
+import { handleCvProcessJob, type CvProcessJobData } from './cv-process';
+
+const CV_PROCESS_QUEUE = 'cv-process';
 
 async function main() {
   const env = parseAppEnv(process.env);
@@ -15,7 +18,6 @@ async function main() {
     logger.error({ err }, 'Redis connection error');
   });
 
-  // Phase 0: bootstrap queue + heartbeat worker only. Domain jobs arrive in later phases.
   const heartbeatQueue = new Queue('heartbeat', { connection });
   await heartbeatQueue.add(
     'tick',
@@ -27,25 +29,41 @@ async function main() {
     },
   );
 
-  const worker = new Worker(
+  const heartbeatWorker = new Worker(
     'heartbeat',
     async (job) => {
-      logger.info({ jobId: job.id, name: job.name }, 'Heartbeat job processed');
+      logger.debug({ jobId: job.id }, 'Heartbeat');
       return { ok: true };
     },
     { connection },
   );
 
-  worker.on('failed', (job, err) => {
-    logger.error({ jobId: job?.id, err }, 'Heartbeat job failed');
+  const cvWorker = new Worker<CvProcessJobData>(
+    CV_PROCESS_QUEUE,
+    async (job) => {
+      logger.info(
+        { jobId: job.id, documentId: job.data.documentId },
+        'Processing CV job',
+      );
+      await handleCvProcessJob({ env, logger, data: job.data });
+      return { ok: true };
+    },
+    { connection, concurrency: 2 },
+  );
+
+  cvWorker.on('failed', (job, err) => {
+    logger.error({ jobId: job?.id, err }, 'CV job failed');
   });
 
-  logger.info('Worker started (heartbeat queue)');
+  logger.info('Worker started (heartbeat + cv-process)');
 
   const shutdown = async () => {
     logger.info('Shutting down worker');
-    await worker.close();
-    await heartbeatQueue.close();
+    await Promise.all([
+      heartbeatWorker.close(),
+      cvWorker.close(),
+      heartbeatQueue.close(),
+    ]);
     await connection.quit();
     process.exit(0);
   };

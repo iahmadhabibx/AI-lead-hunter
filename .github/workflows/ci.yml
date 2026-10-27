@@ -37,9 +37,8 @@ jobs:
       APP_URL: http://localhost:3000
       API_URL: http://localhost:3001
       SESSION_SECRET: ci-session-secret-at-least-32-chars
-      DATABASE_URL: postgres://aijh:aijh_dev_password@localhost:5432/aijh
+      DATABASE_URL: postgres://aijh_app:aijh_app_dev_password@localhost:5432/aijh
       DB_ADMIN_URL: postgres://aijh:aijh_dev_password@localhost:5432/aijh
-      # CI service maps container 5432 to localhost:5432
       REDIS_URL: redis://localhost:6379
       AI_PROVIDER: mock
       LOG_LEVEL: error
@@ -54,7 +53,9 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @aijh/contracts --filter @aijh/observability --filter @aijh/security --filter @aijh/database build
+      - run: pnpm --filter @aijh/contracts --filter @aijh/observability --filter @aijh/security --filter @aijh/ai-runtime --filter @aijh/cv-processing --filter @aijh/database build
+      - run: |
+          echo "AI_PROVIDER=mock" >> $GITHUB_ENV
       - run: pnpm db:migrate
       - run: pnpm test
       - run: pnpm --filter @aijh/api --filter @aijh/worker build

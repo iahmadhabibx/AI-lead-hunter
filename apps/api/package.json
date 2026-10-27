@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@aijh/contracts": "workspace:*",
+    "@aijh/cv-processing": "workspace:*",
     "@aijh/database": "workspace:*",
     "@aijh/observability": "workspace:*",
     "@aijh/security": "workspace:*",
@@ -20,9 +21,11 @@
     "@nestjs/platform-express": "^10.4.15",
     "@nestjs/swagger": "^8.1.0",
     "@nestjs/testing": "^10.4.15",
+    "bullmq": "^5.34.5",
     "cookie-parser": "^1.4.7",
     "drizzle-orm": "^0.38.3",
     "ioredis": "^5.4.2",
+    "multer": "^1.4.5-lts.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "zod": "^3.24.1"
@@ -30,6 +33,7 @@
   "devDependencies": {
     "@types/cookie-parser": "^1.4.8",
     "@types/express": "^5.0.0",
+    "@types/multer": "^1.4.12",
     "@types/node": "^22.10.5",
     "@types/supertest": "^6.0.2",
     "dotenv": "^18.0.9",

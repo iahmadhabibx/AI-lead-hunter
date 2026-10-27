@@ -32,18 +32,29 @@ Common status codes: `400` validation, `401` unauthenticated, `403` forbidden, `
 
 OpenAPI: served at `/api/v1/docs` (Swagger UI) when API is running.
 
+## Phase 1 endpoints
+
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/cv/uploads` | yes | Multipart `file` (PDF/DOCX); optional `Idempotency-Key` |
+| GET | `/cv/documents/:id` | yes | Document metadata + processing status |
+| GET | `/tasks/:id` | yes | Background task status |
+| GET | `/profile` | yes | Active + pending profile versions |
+| GET | `/profile/versions` | yes | Version history |
+| PATCH | `/profile/draft` | yes | Correct pending extraction (Zod-validated) |
+| POST | `/profile/approve` | yes | Freeze pending as immutable approved + active |
+
+Long-running CV processing returns `{ documentId, taskId, status }` and clients poll `/tasks/:id`.
+
 ## Planned endpoints (later phases)
 
-- CV upload + processing status
-- Profile + versions + preferences
+- Preferences (beyond profile preferences block)
 - Search create/progress
 - Jobs list/detail + match explanations
 - Save/unsave, feedback
 - Application drafts + tracking
 - Source status
 - Account export + deletion
-
-Long-running work returns `{ "taskId": "uuid" }` and clients poll task status.
 
 ## Pagination
 

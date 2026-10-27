@@ -10,16 +10,27 @@
 - **No mandatory paid AI API**
 - Do not auto-download large models on app startup — explicit setup command
 
-## CV extraction (Phase 1)
+## CV extraction (Phase 1 — implemented)
 
-1. Extract text with maintained PDF/DOCX libraries; OCR fallback for scans
-2. Pass text to model for structured extraction constrained by schema
-3. Validate; represent missing fields explicitly
-4. Never fabricate names, employers, dates, skills, qualifications
-5. Store evidence/provenance where practical
-6. User review required before approved immutable profile version
+Packages: `@aijh/ai-runtime`, `@aijh/cv-processing`, schema in `@aijh/contracts` (`CandidateProfilePayload` **v1.0.0**).
 
-CV/job text is untrusted. System instructions and tool permissions must not be overridable by document content.
+1. Magic-byte validation for PDF/DOCX; size limits via `MAX_UPLOAD_BYTES`
+2. Text extraction with `pdf-parse` / `mammoth` (**OCR not enabled** — empty/scanned PDFs fail with a clear error)
+3. AI extraction via provider-agnostic interface:
+   - `mock` — deterministic heuristics for CI/local (default)
+   - `ollama` — optional local chat JSON extraction; requires `OLLAMA_MODEL`
+4. Zod validation of every model result; `missingFields` / `uncertainFields` explicit
+5. Experience months calculated with overlap collapsing (`calculateExperienceMonths`)
+6. Provenance stores provider/model/promptVersion on the profile version
+7. User must review pending draft and **approve** to create an immutable active version
+
+CV text is wrapped as data (`CV_TEXT_BEGIN`/`END` for Ollama). Model output cannot execute tools.
+
+### Explicit setup for Ollama (not automatic)
+
+1. Install Ollama and pull a model manually.
+2. Set `AI_PROVIDER=ollama` and `OLLAMA_MODEL=<name>`.
+3. Ensure `OLLAMA_BASE_URL` is reachable. App startup does **not** download models.
 
 ## Matching (Phase 3)
 

@@ -103,9 +103,19 @@ Grounded drafts, editable preview, export, provenance, approval, application tra
 
 See `docs/PROGRESS.md`.
 
-### Phase 6 — Hardening + deployment
+### Phase 6 — Hardening + deployment ✅ HARDENING PASS / ❌ NOT production-ready (2026-10-28)
 
-Export/delete, RLS coverage, rate limits, backups, production runbook.
+Export/delete, rate limits, backups scripts, security headers, path hardening, readiness report.
+
+**Acceptance criteria**
+
+- [x] Account export + confirmed deletion workflows
+- [x] Auth rate limits (single-instance)
+- [x] Backup/restore scripts + deployment runbook notes
+- [x] Security review documented honestly (`docs/RELEASE_READINESS.md`)
+- [ ] Public production cutover (TLS, secrets manager, durable storage, multi-instance limits) — **open blockers**
+
+Do **not** treat Phase 6 as “production ready.” See readiness report.
 
 ## Dependencies between phases
 

@@ -7,6 +7,33 @@ Standing rules for this file:
 - Record **actual commands and results**. Do not claim PASS from generated files alone.
 - A phase is complete only when features work, tests pass, and limitations are documented (`AGENTS.md` → Phase completion discipline).
 
+## 2026-10-28 — Phase 6 hardening review (DoD)
+
+### Verdict
+
+**Hardening controls: PASS (implemented + tested).**  
+**Public production readiness: FAIL / NOT READY** — see `docs/RELEASE_READINESS.md`.
+
+### Fixed in this pass
+
+- Auth rate limits, account export/delete, storage path hardening, security headers, prod Swagger off, backup scripts, CI package build list
+
+### Commands executed (actual)
+
+| Command | Result |
+| --- | --- |
+| `pnpm --filter @aijh/security test` | pass — includes rate-limit **2** |
+| `pnpm test` | pass (incl. storage path **2**) |
+| `pnpm test:integration` | pass — **13** tests (incl. account×3) |
+| `pnpm build` | pass |
+| `pnpm typecheck` | pass |
+
+### Remaining blockers for production
+
+TLS, secrets manager, durable storage, multi-instance rate limits, password reset/email, scheduled backups, legal review.
+
+---
+
 ## 2026-10-28 — Phase 4 feedback learning + Phase 5 application assistance (DoD)
 
 ### Verdict
@@ -52,7 +79,7 @@ Standing rules for this file:
 
 ### Next
 
-Phase 6 — SaaS hardening (export/delete account, rate limits, backups, deployment runbook).
+Phase 6 hardening review completed 2026-10-28 — production cutover still blocked (see readiness report).
 
 ---
 

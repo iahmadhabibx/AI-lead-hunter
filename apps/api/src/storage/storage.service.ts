@@ -39,10 +39,36 @@ export class StorageService {
   }
 
   resolveAbsolute(storagePath: string): string {
-    const absolute = path.resolve(this.root(), storagePath);
-    if (!absolute.startsWith(this.root())) {
+    const root = this.root();
+    // Reject absolute / escaped segments before resolve
+    if (
+      path.isAbsolute(storagePath) ||
+      storagePath.split(/[/\\]/).includes('..')
+    ) {
+      throw new Error('Invalid storage path');
+    }
+    const absolute = path.resolve(root, storagePath);
+    const relative = path.relative(root, absolute);
+    if (
+      relative.startsWith('..') ||
+      path.isAbsolute(relative) ||
+      relative === ''
+    ) {
       throw new Error('Invalid storage path');
     }
     return absolute;
+  }
+
+  async deleteUserTree(userId: string): Promise<void> {
+    if (!/^[0-9a-f-]{36}$/i.test(userId)) {
+      throw new Error('Invalid user id for storage deletion');
+    }
+    const userDir = path.resolve(this.root(), userId);
+    const relative = path.relative(this.root(), userDir);
+    if (relative.startsWith('..') || path.isAbsolute(relative)) {
+      throw new Error('Invalid storage path');
+    }
+    const { rm } = await import('node:fs/promises');
+    await rm(userDir, { recursive: true, force: true });
   }
 }

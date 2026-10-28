@@ -23,6 +23,18 @@ export const AppEnvSchema = z.object({
   JOB_SOURCES_JSON: z.string().optional(),
   JOB_STALE_AFTER_HOURS: z.coerce.number().int().positive().default(72),
   JOB_INGEST_CONCURRENCY: z.coerce.number().int().positive().default(2),
+  /** Auth login/register attempts per IP per window (single-instance memory limiter). */
+  AUTH_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(20),
+  AUTH_RATE_LIMIT_WINDOW_MS: z.coerce
+    .number()
+    .int()
+    .positive()
+    .default(60_000),
+  /** When true behind a trusted reverse proxy, use X-Forwarded-For for rate limits. */
+  TRUST_PROXY: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((v) => v === 'true'),
 });
 
 export type AppEnv = z.infer<typeof AppEnvSchema>;

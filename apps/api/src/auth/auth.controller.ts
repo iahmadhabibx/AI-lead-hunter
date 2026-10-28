@@ -13,6 +13,7 @@ import { ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import type { LoginRequest, RegisterRequest } from '@aijh/contracts';
 import type { RequestWithId } from '../common/request-id.middleware';
+import { AuthRateLimitGuard } from '../common/rate-limit.guard';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './current-user.decorator';
 import { SessionGuard } from './session.guard';
@@ -25,6 +26,7 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(200)
+  @UseGuards(AuthRateLimitGuard)
   async register(
     @Body() body: RegisterRequest,
     @Req() req: RequestWithId,
@@ -43,6 +45,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(200)
+  @UseGuards(AuthRateLimitGuard)
   async login(
     @Body() body: LoginRequest,
     @Req() req: RequestWithId,

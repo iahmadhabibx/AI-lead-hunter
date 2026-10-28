@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AccountModule } from './account/account.module';
 import { ApplicationsModule } from './applications/applications.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
@@ -28,6 +29,7 @@ import { TasksModule } from './tasks/tasks.module';
     MatchModule,
     PreferencesModule,
     ApplicationsModule,
+    AccountModule,
   ],
 })
 export class AppModule {}

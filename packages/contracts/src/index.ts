@@ -8,3 +8,4 @@ export * from './job';
 export * from './matching';
 export * from './preferences';
 export * from './applications';
+export * from './account';

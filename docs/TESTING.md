@@ -74,3 +74,10 @@ Fixture: `tests/fixtures/sample-cv.docx` (demo CV text, not a real person's priv
 - Document versioning + immutable approve
 - Ownership isolation (other user → 404)
 - Markdown export provenance headers
+
+## Phase 6 coverage targets
+
+- Auth rate limiter unit behavior
+- Storage path traversal rejection
+- Account export download ownership + delete cascade
+- CI builds all workspace packages used by api/worker

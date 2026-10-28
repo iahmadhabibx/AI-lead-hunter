@@ -90,10 +90,18 @@ Long-running CV processing returns `{ documentId, taskId, status }` and clients 
 | POST | `/documents/:id/approve` | yes | Approve (blocked if unsupported claims) |
 | GET | `/documents/:id/export` | yes | Markdown export download |
 
-## Planned endpoints (later phases)
+## Phase 6 endpoints (account)
 
-- Account export + deletion
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/account/export` | yes | Queue personal data export |
+| GET | `/account/export/download` | yes | Download latest export JSON |
+| POST | `/account/delete` | yes | Confirm email + `DELETE MY ACCOUNT` → queue deletion |
+
+## Planned endpoints (later)
+
 - Match/feed UI polish
+- Password reset
 
 ## Pagination
 

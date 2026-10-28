@@ -28,10 +28,10 @@
 - Session create/lookup/revoke via `SECURITY DEFINER` functions (no open session DML for the app role)
 - Expand RLS as additional private tables land
 
-## Data lifecycle
+## Data lifecycle (Phase 6 — implemented)
 
-- Export: user-initiated dump of owned personal data (Phase 6+)
-- Deletion: account + files + derived personal data; document lawful retention exceptions when known
+- Export: `POST /account/export` → worker builds JSON under `STORAGE_ROOT/{userId}/exports/`; download via `GET /account/export/download` (owner only). Password hashes excluded.
+- Deletion: `POST /account/delete` with email + phrase confirmation → worker deletes file tree and user row (FK cascades). Audit may retain minimal metadata until purged by retention policy.
 - Do **not** claim GDPR/CCPA compliance without jurisdiction review and implemented controls
 
 ## Uploads (Phase 1 — implemented)
@@ -55,10 +55,21 @@
 - No passwords, tokens, full CV bodies, or secrets in logs
 - Audit events minimize PII
 
-## Known gaps (track in PROGRESS)
+## Hardening landed (Phase 6)
 
-- Full CSRF strategy for cookie+SPA (SameSite=Lax mitigates basic cross-site POST; deepen in hardening)
+- Auth login/register rate limits (in-process `MemoryRateLimiter`; configure `AUTH_RATE_LIMIT_*`)
+- Security headers middleware; Swagger disabled in production
+- Storage path traversal checks tightened
+- Backup/restore scripts under `infra/scripts/`
+
+## Known gaps (still block public production)
+
+- Full CSRF strategy for cookie+SPA (SameSite=Lax mitigates basic cross-site POST)
 - Password reset + email delivery
 - Production secrets management / TLS termination
-- Auth endpoint rate limits (documented for hardening)
+- Multi-instance rate limiting (memory limiter is single-process)
+- Durable object storage (S3-compatible) instead of local disk
 - Users/audit tables are not RLS-scoped (login needs email lookup; audit writes are server-side)
+- Automated dependency CVE gating in CI
+
+See `docs/RELEASE_READINESS.md` for the non-marketing readiness verdict.

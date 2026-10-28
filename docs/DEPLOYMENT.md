@@ -48,8 +48,33 @@ Do not claim free hosts are production-ready without verifying persistent storag
 
 ## Backups
 
-Document Postgres dump/restore before production cutover. Phase 0: `pg_dump` / `pg_restore` via Compose documented in scripts as they land.
+```bash
+# From repo root with DB_ADMIN_URL set (owner URL)
+export DB_ADMIN_URL=postgres://aijh:aijh_dev_password@localhost:5433/aijh
+bash infra/scripts/backup-postgres.sh
+
+# Destructive restore (requires explicit confirmation)
+CONFIRM_RESTORE=YES bash infra/scripts/restore-postgres.sh tmp/backups/aijh-….dump
+```
+
+Schedule backups operationally before production cutover. Scripts are helpers — not a managed backup service.
+
+## Production runbook (minimum)
+
+1. TLS terminator in front of API/web; set `NODE_ENV=production`, `TRUST_PROXY=true` only if the proxy is trusted.
+2. Distinct strong `SESSION_SECRET` and DB passwords (not Compose defaults).
+3. Runtime `DATABASE_URL` must use `aijh_app` (RLS); migrate with `DB_ADMIN_URL`.
+4. Persistent volume or object storage for `STORAGE_ROOT`.
+5. Always-on API + worker processes; Redis + Postgres HA as required by SLO.
+6. Run backup script on a schedule; test restore in a staging DB.
+7. Keep `AI_PROVIDER=mock` unless Ollama/host inference is provisioned intentionally.
+
+**Public free hosts are not production** without persistent DB, workers, storage, and TLS.
 
 ## CI
 
-GitHub Actions: install, typecheck, unit tests, build. Integration tests when services available.
+GitHub Actions: install, migrate, unit tests, API/worker/web build with Postgres+Redis services. Mock AI only.
+
+## Readiness
+
+See `docs/RELEASE_READINESS.md`. Current verdict: **not production-ready** for public internet until blockers listed there are closed.

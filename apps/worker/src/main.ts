@@ -9,11 +9,19 @@ import {
 } from './job-ingest';
 import { handleJobsMatch, type JobsMatchJobData } from './match-jobs';
 import { handleDocsGenerate, type DocsGenerateJobData } from './docs-generate';
+import {
+  handleAccountDelete,
+  handleAccountExport,
+  type AccountDeleteJobData,
+  type AccountExportJobData,
+} from './account-jobs';
 
 const CV_PROCESS_QUEUE = 'cv-process';
 const JOBS_DISCOVER_QUEUE = 'jobs-discover';
 const JOBS_MATCH_QUEUE = 'jobs-match';
 const DOCS_GENERATE_QUEUE = 'docs-generate';
+const ACCOUNT_EXPORT_QUEUE = 'account-export';
+const ACCOUNT_DELETE_QUEUE = 'account-delete';
 
 async function main() {
   const env = parseAppEnv(process.env);
@@ -107,6 +115,24 @@ async function main() {
     { connection, concurrency: 2 },
   );
 
+  const accountExportWorker = new Worker<AccountExportJobData>(
+    ACCOUNT_EXPORT_QUEUE,
+    async (job) => {
+      logger.info({ jobId: job.id }, 'Exporting account data');
+      return handleAccountExport({ env, logger, data: job.data });
+    },
+    { connection, concurrency: 1 },
+  );
+
+  const accountDeleteWorker = new Worker<AccountDeleteJobData>(
+    ACCOUNT_DELETE_QUEUE,
+    async (job) => {
+      logger.info({ jobId: job.id }, 'Deleting account');
+      return handleAccountDelete({ env, logger, data: job.data });
+    },
+    { connection, concurrency: 1 },
+  );
+
   cvWorker.on('failed', (job, err) => {
     logger.error({ jobId: job?.id, err }, 'CV job failed');
   });
@@ -119,9 +145,15 @@ async function main() {
   docsWorker.on('failed', (job, err) => {
     logger.error({ jobId: job?.id, err }, 'Docs generate failed');
   });
+  accountExportWorker.on('failed', (job, err) => {
+    logger.error({ jobId: job?.id, err }, 'Account export failed');
+  });
+  accountDeleteWorker.on('failed', (job, err) => {
+    logger.error({ jobId: job?.id, err }, 'Account delete failed');
+  });
 
   logger.info(
-    'Worker started (heartbeat + cv-process + jobs-discover + jobs-match + docs-generate)',
+    'Worker started (cv, discover, match, docs, account export/delete)',
   );
 
   const shutdown = async () => {
@@ -132,6 +164,8 @@ async function main() {
       jobsWorker.close(),
       matchWorker.close(),
       docsWorker.close(),
+      accountExportWorker.close(),
+      accountDeleteWorker.close(),
       heartbeatQueue.close(),
       jobsDiscoverQueue.close(),
     ]);

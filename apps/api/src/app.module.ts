@@ -4,6 +4,7 @@ import { ConfigModule } from './config/config.module';
 import { CvModule } from './cv/cv.module';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
+import { MatchModule } from './match/match.module';
 import { ProfileModule } from './profile/profile.module';
 import { QueueModule } from './queue/queue.module';
 import { RedisModule } from './redis/redis.module';
@@ -22,6 +23,7 @@ import { TasksModule } from './tasks/tasks.module';
     TasksModule,
     ProfileModule,
     SourcesModule,
+    MatchModule,
   ],
 })
 export class AppModule {}

@@ -47,9 +47,17 @@ RLS + `FORCE ROW LEVEL SECURITY` on all three; access via `withTenantContext`.
 | `canonical_jobs` | Normalized listings + content hash + freshness |
 | `job_source_links` | Many-to-many source ↔ canonical |
 
+## Phase 3 matching / feedback tables (user-owned + RLS)
+
+| Table | Purpose |
+| --- | --- |
+| `match_results` | Per user/profile-version/job/scoring-version; band, suitability %, breakdown JSON |
+| `saved_jobs` | User-saved catalog jobs (unique per user+job) |
+| `feedback_events` | Append-only interest/save/reject/… events with optional rejection reasons |
+
 ## Later tables (designed; migrate in later phases)
 
-users-owned: `preferences` (extended), `feedback_events`, `saved_jobs`, `applications`, `generated_documents`, `match_results`
+users-owned: `preferences` (learned), `applications`, `generated_documents`
 
 shared/catalog: `skills`, `job_skills`
 

@@ -16,6 +16,7 @@
     "@aijh/database": "workspace:*",
     "@aijh/job-connectors": "workspace:*",
     "@aijh/job-normalization": "workspace:*",
+    "@aijh/matching": "workspace:*",
     "@aijh/observability": "workspace:*",
     "bullmq": "^5.34.5",
     "drizzle-orm": "^0.38.3",

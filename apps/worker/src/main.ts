@@ -7,9 +7,11 @@ import {
   handleJobsDiscover,
   type JobsDiscoverJobData,
 } from './job-ingest';
+import { handleJobsMatch, type JobsMatchJobData } from './match-jobs';
 
 const CV_PROCESS_QUEUE = 'cv-process';
 const JOBS_DISCOVER_QUEUE = 'jobs-discover';
+const JOBS_MATCH_QUEUE = 'jobs-match';
 
 async function main() {
   const env = parseAppEnv(process.env);
@@ -85,14 +87,28 @@ async function main() {
     { connection, concurrency: env.JOB_INGEST_CONCURRENCY },
   );
 
+  const matchWorker = new Worker<JobsMatchJobData>(
+    JOBS_MATCH_QUEUE,
+    async (job) => {
+      logger.info({ jobId: job.id, data: job.data }, 'Running job matching');
+      return handleJobsMatch({ env, logger, data: job.data });
+    },
+    { connection, concurrency: 2 },
+  );
+
   cvWorker.on('failed', (job, err) => {
     logger.error({ jobId: job?.id, err }, 'CV job failed');
   });
   jobsWorker.on('failed', (job, err) => {
     logger.error({ jobId: job?.id, err }, 'Jobs discover failed');
   });
+  matchWorker.on('failed', (job, err) => {
+    logger.error({ jobId: job?.id, err }, 'Jobs match failed');
+  });
 
-  logger.info('Worker started (heartbeat + cv-process + jobs-discover)');
+  logger.info(
+    'Worker started (heartbeat + cv-process + jobs-discover + jobs-match)',
+  );
 
   const shutdown = async () => {
     logger.info('Shutting down worker');
@@ -100,13 +116,13 @@ async function main() {
       heartbeatWorker.close(),
       cvWorker.close(),
       jobsWorker.close(),
+      matchWorker.close(),
       heartbeatQueue.close(),
       jobsDiscoverQueue.close(),
     ]);
     await connection.quit();
     process.exit(0);
   };
-
   process.on('SIGINT', () => void shutdown());
   process.on('SIGTERM', () => void shutdown());
 }

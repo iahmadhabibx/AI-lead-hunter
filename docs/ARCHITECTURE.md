@@ -17,7 +17,7 @@ packages/
   observability/ Logging, request IDs, health helpers
   # Later phases (created when needed):
   # candidate-profile, cv-processing, job-connectors,
-  # job-normalization, matching, feedback,
+  # job-normalization, matching,
   # application-assistance, ai-runtime
 ```
 

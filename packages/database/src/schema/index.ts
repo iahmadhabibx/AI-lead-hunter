@@ -5,3 +5,4 @@ export * from './background-tasks';
 export * from './cv-documents';
 export * from './candidate-profiles';
 export * from './jobs';
+export * from './matching';

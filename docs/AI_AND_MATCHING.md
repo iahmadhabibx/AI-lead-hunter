@@ -32,9 +32,11 @@ CV text is wrapped as data (`CV_TEXT_BEGIN`/`END` for Ollama). Model output cann
 2. Set `AI_PROVIDER=ollama` and `OLLAMA_MODEL=<name>`.
 3. Ensure `OLLAMA_BASE_URL` is reachable. App startup does **not** download models.
 
-## Matching (Phase 3)
+## Matching (Phase 3 — implemented)
 
-Deterministic, independently testable scoring. Initial weights (configurable):
+Package: `@aijh/matching`. Scoring version **`MATCH_SCORING_VERSION = 1.0.0`**.
+
+Deterministic, independently testable scoring. Weights (`DEFAULT_MATCH_WEIGHTS`):
 
 | Component | Weight |
 | --- | --- |
@@ -45,18 +47,26 @@ Deterministic, independently testable scoring. Initial weights (configurable):
 | Compensation | 10% |
 | Industry / interests | 5% |
 
-Requirements:
+Pipeline:
+
+1. **Hard filters** — job status, excluded industries, work mode (when both known), country (place-specific conflicts), relocation refusal + onsite elsewhere, sponsorship (`yes` + evidenced `not_offered`).
+2. Soft notes (e.g. sponsorship required but employer stance unknown) → band `needs_verification` (unknown ≠ positive).
+3. **Component scores** — unknown components are excluded from the weighted average (never treated as 1.0).
+4. Persist `match_results` with profile version id, job content hash, scoring version, band, suitability %, full breakdown JSON.
+
+APIs: `POST /matches/run`, `GET /matches`, `GET /matches/:id`, save/reject + `feedback` endpoints. Worker queue `jobs-match`.
+
+Requirements upheld:
 
 - Hard eligibility filters first
 - Unknown ≠ positive
-- Sponsorship unknown unless evidenced
-- Persist profile version, job version/hash, scoring version, component scores, evidence, missing/unknowns
+- Sponsorship unknown unless evidenced in job text (`detectSponsorshipSignal`)
 - Match % is **not** interview/hiring probability
-- Embeddings optional for retrieval only; cosine ≠ calibrated success probability
+- Embeddings not used for MVP scoring
 
-## Feedback learning (Phase 4)
+## Feedback events (Phase 3 partial; learning Phase 4)
 
-Auditable events → transparent deterministic preference updates. No fine-tune from small click sets. Explicit constraints override inferences. Users can review/reset learned preferences. Never infer sensitive characteristics.
+Auditable `feedback_events` + `saved_jobs` + `audit_events` for save/unsave/reject and typed feedback. **Preference learning / reset UI is Phase 4** — events are stored now without automatic preference mutation.
 
 ## Application assistance (Phase 5)
 

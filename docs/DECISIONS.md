@@ -85,6 +85,13 @@
 - **Decision:** After a successful discover, IDs absent from the page set become `stale`. `closed` reserved for explicit confirmation paths later.
 - **Consequences:** Matching (Phase 3) must treat stale separately from active.
 
+## ADR-013: Deterministic matching v1.0.0 (no invented sponsorship)
+
+- **Status:** Accepted (Phase 3)
+- **Context:** Users need explainable suitability without conflating match % with hiring odds or inventing visa facts.
+- **Decision:** Versioned weighted scorer (`MATCH_SCORING_VERSION` 1.0.0); hard filters first; unknown component scores excluded from the weighted average; sponsorship stance only from explicit job-text signals (`offered` / `not_offered` / `unknown`). Persist full breakdown keyed by user + profile version + job + scoring version.
+- **Consequences:** Bumping scoring version requires a new persisted key and regression review; embeddings remain optional/out of MVP scoring.
+
 ## Unresolved
 
 - Default production Ollama model selection (size/quality tradeoff still open).

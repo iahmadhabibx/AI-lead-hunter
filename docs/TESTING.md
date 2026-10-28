@@ -54,3 +54,10 @@ Fixture: `tests/fixtures/sample-cv.docx` (demo CV text, not a real person's priv
 - Normalization + content hash stability
 - Idempotent ingest into catalog tables
 - `GET /sources` does not invent jobs when catalog empty
+
+## Phase 3 coverage targets
+
+- Unit: sponsorship signal detection; hard filters (work mode, country, relocation, sponsorship, excluded industry, closed job)
+- Regression: hard-constraint violation cases in `@aijh/matching`
+- Unknown compensation/sponsorship never scored as positive
+- Integration: approve profile → seed jobs → `jobs.match` → persisted breakdowns → save/reject → feedback list

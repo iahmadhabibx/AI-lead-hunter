@@ -5,3 +5,4 @@ export * from './tasks';
 export * from './candidate-profile';
 export * from './experience';
 export * from './job';
+export * from './matching';

@@ -7,6 +7,49 @@ Standing rules for this file:
 - Record **actual commands and results**. Do not claim PASS from generated files alone.
 - A phase is complete only when features work, tests pass, and limitations are documented (`AGENTS.md` → Phase completion discipline).
 
+## 2026-10-28 — Phase 3 matching engine (DoD)
+
+### Verdict
+
+**Phase 3 acceptance criteria: PASS.** Application document generation **not** started (Phase 5). Preference *learning* deferred to Phase 4; save/reject + auditable feedback events are in scope and verified.
+
+### Acceptance evidence
+
+| Criterion | Evidence |
+| --- | --- |
+| Deterministic versioned scoring | `@aijh/matching` + `MATCH_SCORING_VERSION` `1.0.0` |
+| Hard filters + weighted components | `evaluateHardFilters` + `scoreComponents`; unknown components excluded from average |
+| Work mode / country / relocation / sponsorship | Hard-fail only on evidenced conflicts; sponsorship unknown → `needs_verification` |
+| Persisted breakdowns | `match_results` (migration `0004_matching_feedback`) |
+| Save / reject + audit | `saved_jobs`, `feedback_events`, `audit_events`; APIs under `/matches`, `/saved-jobs`, `/feedback` |
+| Worker | BullMQ `jobs-match` → `handleJobsMatch` |
+| Tests | Matching unit 19 + hard-constraint regression; integration match path |
+
+### Commands executed (actual)
+
+| Command | Result |
+| --- | --- |
+| `pnpm db:migrate` | pass — `0004_matching_feedback` |
+| `pnpm --filter @aijh/matching test` | pass — **19** tests |
+| `pnpm test` | pass |
+| `pnpm test:integration` | pass — **8** tests (auth, tenant, CV, sources×2, **match×1**) |
+| `pnpm build` | pass |
+| `pnpm typecheck` | pass |
+
+### Limitations
+
+- No match/feed UI in web app yet (API + worker complete)
+- Preference learning / reset UI is Phase 4 (events stored only)
+- Country matching is conservative string inclusion on `locationText`, not geocoding
+- Salary soft-score uses a conservative `$` hint extractor; missing data → unknown, not positive
+- Application drafts / tracking not implemented
+
+### Next
+
+Phase 4 — deterministic preference updates from feedback events + review/reset UI.
+
+---
+
 ## 2026-10-27 — Phase 2 connectors + normalization (DoD)
 
 ### Verdict
@@ -48,11 +91,11 @@ Neither API is global job search. Empty `JOB_SOURCES_JSON` ⇒ no invented listi
 - No live network required in CI; live boards only when configured
 - Redistribution/commercial-use of third-party JD text needs legal review before production marketing claims
 - `closed` status not auto-set from discover misses (stale only)
-- Matching / ranking not implemented
+- Matching / ranking was deferred to Phase 3 (now complete — see 2026-10-28 entry)
 
 ### Next
 
-Phase 3 — matching engine + explanations (uses approved profiles + active canonical jobs).
+Phase 3 completed 2026-10-28; see that entry for Phase 4 next steps.
 
 ---
 

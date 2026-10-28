@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "pnpm -r --parallel --filter @aijh/api --filter @aijh/worker --filter @aijh/web dev",
-    "build": "pnpm -r --filter @aijh/contracts --filter @aijh/observability --filter @aijh/security --filter @aijh/ai-runtime --filter @aijh/cv-processing --filter @aijh/job-connectors --filter @aijh/job-normalization --filter @aijh/database build && pnpm -r --filter @aijh/api --filter @aijh/worker --filter @aijh/web build",
+    "build": "pnpm -r --filter @aijh/contracts --filter @aijh/observability --filter @aijh/security --filter @aijh/ai-runtime --filter @aijh/cv-processing --filter @aijh/job-connectors --filter @aijh/job-normalization --filter @aijh/matching --filter @aijh/database build && pnpm -r --filter @aijh/api --filter @aijh/worker --filter @aijh/web build",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r --if-present lint",
     "test": "pnpm -r --if-present test",

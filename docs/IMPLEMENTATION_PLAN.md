@@ -60,13 +60,25 @@ Greenhouse/Lever board connectors (docs re-verified), registry, normalize, dedup
 
 See `docs/PROGRESS.md` and `docs/JOB_CONNECTORS.md`.
 
-### Phase 3 — Matching
+### Phase 3 — Matching ✅ PASS (verified 2026-10-28)
 
-Hard filters, weighted components, explanations, persisted breakdowns, regression tests.
+Hard filters, weighted components, explanations, persisted breakdowns, save/reject + auditable feedback events, regression tests. Application document generation **not** included.
 
-### Phase 4 — Feedback
+**Acceptance criteria**
 
-Auditable events, deterministic preference updates, reset UI.
+- [x] Deterministic versioned scoring (`MATCH_SCORING_VERSION` 1.0.0)
+- [x] Hard eligibility + weighted components; unknown ≠ positive
+- [x] Remote/hybrid/onsite, countries, relocation, sponsorship without inventing facts
+- [x] Evidence-backed explanations + persisted score breakdowns
+- [x] Job save/reject + auditable feedback events (preference learning deferred to Phase 4)
+- [x] Unit, integration, hard-constraint regression tests
+- [x] Application documents **not** generated (Phase 5)
+
+See `docs/PROGRESS.md` and `docs/AI_AND_MATCHING.md`.
+
+### Phase 4 — Feedback learning
+
+Deterministic preference updates from events, reset UI (events already persisted in Phase 3).
 
 ### Phase 5 — Application assistance + tracking
 

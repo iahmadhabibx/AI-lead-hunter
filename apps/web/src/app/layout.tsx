@@ -1,16 +1,12 @@
 import type { Metadata } from 'next';
-import { DM_Sans, Fraunces } from 'next/font/google';
+import { Lato } from 'next/font/google';
+import { UiProvider } from '@/components/ui/provider';
 import './globals.css';
 
-const display = Fraunces({
+const lato = Lato({
   subsets: ['latin'],
-  variable: '--font-display',
-  display: 'swap',
-});
-
-const body = DM_Sans({
-  subsets: ['latin'],
-  variable: '--font-body',
+  weight: ['400', '700', '900'],
+  variable: '--font-lato',
   display: 'swap',
 });
 
@@ -24,8 +20,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable}`}>
-      <body>{children}</body>
+    <html lang="en" className={lato.variable}>
+      <body>
+        <UiProvider>{children}</UiProvider>
+      </body>
     </html>
   );
 }

@@ -2,81 +2,116 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FormEvent, useState } from 'react';
-import { apiFetch } from '@/lib/api';
+import { FormEvent } from 'react';
+import { Box, Field, Heading, Input, Stack, Text } from '@chakra-ui/react';
+import { BrandMark } from '@/components/layout/site-header';
+import { AuthPanel, PageShell } from '@/components/layout/page-shell';
+import { SlackButton } from '@/components/ui/slack-button';
+import { useAuthStore } from '@/stores/auth-store';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
+  const pending = useAuthStore((s) => s.pending);
+  const error = useAuthStore((s) => s.error);
+  const register = useAuthStore((s) => s.register);
+  const clearError = useAuthStore((s) => s.clearError);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
-    setPending(true);
+    clearError();
     const form = new FormData(e.currentTarget);
     try {
-      await apiFetch('/auth/register', {
-        method: 'POST',
-        body: JSON.stringify({
-          email: String(form.get('email') ?? ''),
-          password: String(form.get('password') ?? ''),
-          displayName: String(form.get('displayName') ?? '') || undefined,
-        }),
+      await register({
+        email: String(form.get('email') ?? ''),
+        password: String(form.get('password') ?? ''),
+        displayName: String(form.get('displayName') ?? '') || undefined,
       });
       router.push('/app');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed');
-    } finally {
-      setPending(false);
+    } catch {
+      // error stored in auth store
     }
   }
 
   return (
-    <main className="shell">
-      <header className="site-header">
-        <Link className="brand" href="/">
-          ForgePath
-        </Link>
-      </header>
-      <section className="panel" aria-labelledby="register-title">
-        <h1 id="register-title">Create your account</h1>
-        <p className="lead">Private by default. You control exports and deletion later.</p>
-        <form className="form" onSubmit={onSubmit}>
-          <label>
-            Display name
-            <input name="displayName" autoComplete="name" maxLength={120} />
-          </label>
-          <label>
-            Email
-            <input
-              name="email"
-              type="email"
-              required
-              autoComplete="email"
-              maxLength={320}
-            />
-          </label>
-          <label>
-            Password
-            <input
-              name="password"
-              type="password"
-              required
-              minLength={10}
-              maxLength={128}
-              autoComplete="new-password"
-            />
-          </label>
-          {error ? <div className="form-error" role="alert">{error}</div> : null}
-          <button className="btn btn-primary" type="submit" disabled={pending}>
-            {pending ? 'Creating…' : 'Create account'}
-          </button>
+    <PageShell>
+      <Box py="4">
+        <BrandMark />
+      </Box>
+      <AuthPanel>
+        <Heading as="h1" size="xl" fontWeight="900" mb="1">
+          Create your account
+        </Heading>
+        <Text color="fg.muted" mb="6">
+          Private by default. You control exports and deletion.
+        </Text>
+        <form onSubmit={onSubmit}>
+          <Stack gap="4">
+            <Field.Root>
+              <Field.Label fontWeight="700">Display name</Field.Label>
+              <Input
+                name="displayName"
+                autoComplete="name"
+                maxLength={120}
+                borderRadius="slack"
+                borderColor="border.default"
+                _focusVisible={{ borderColor: 'slack.blue', boxShadow: '0 0 0 1px #1264A3' }}
+              />
+            </Field.Root>
+            <Field.Root required>
+              <Field.Label fontWeight="700">Email</Field.Label>
+              <Input
+                name="email"
+                type="email"
+                required
+                autoComplete="email"
+                maxLength={320}
+                borderRadius="slack"
+                borderColor="border.default"
+                _focusVisible={{ borderColor: 'slack.blue', boxShadow: '0 0 0 1px #1264A3' }}
+              />
+            </Field.Root>
+            <Field.Root required>
+              <Field.Label fontWeight="700">Password</Field.Label>
+              <Input
+                name="password"
+                type="password"
+                required
+                minLength={10}
+                maxLength={128}
+                autoComplete="new-password"
+                borderRadius="slack"
+                borderColor="border.default"
+                _focusVisible={{ borderColor: 'slack.blue', boxShadow: '0 0 0 1px #1264A3' }}
+              />
+            </Field.Root>
+            {error ? (
+              <Box
+                role="alert"
+                bg="rgba(224, 30, 90, 0.08)"
+                borderWidth="1px"
+                borderColor="rgba(224, 30, 90, 0.25)"
+                color="fg.danger"
+                borderRadius="slack"
+                px="3"
+                py="2"
+                fontSize="sm"
+                fontWeight="700"
+              >
+                {error}
+              </Box>
+            ) : null}
+            <SlackButton type="submit" variant="primary" disabled={pending} w="100%">
+              {pending ? 'Creating…' : 'Create account'}
+            </SlackButton>
+          </Stack>
         </form>
-        <p className="muted" style={{ marginTop: '1rem' }}>
-          Already registered? <Link href="/login">Sign in</Link>
-        </p>
-      </section>
-    </main>
+        <Text color="fg.muted" fontSize="sm" mt="5">
+          Already registered?{' '}
+          <Text asChild color="fg.link" fontWeight="700" display="inline">
+            <Link href="/login">Sign in</Link>
+          </Text>
+        </Text>
+      </AuthPanel>
+    </PageShell>
   );
 }

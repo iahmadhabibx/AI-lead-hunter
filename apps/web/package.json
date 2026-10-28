@@ -11,9 +11,12 @@
   },
   "dependencies": {
     "@aijh/contracts": "workspace:*",
+    "@chakra-ui/react": "^3.37.0",
+    "@emotion/react": "^11.14.0",
     "next": "^15.1.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "zustand": "^5.0.16"
   },
   "devDependencies": {
     "@types/node": "^22.10.5",

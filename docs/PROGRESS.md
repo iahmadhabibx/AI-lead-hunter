@@ -7,6 +7,23 @@ Standing rules for this file:
 - Record **actual commands and results**. Do not claim PASS from generated files alone.
 - A phase is complete only when features work, tests pass, and limitations are documented (`AGENTS.md` → Phase completion discipline).
 
+## 2026-10-28 — Web client state: Zustand
+
+### Done
+
+- Added `zustand` to `@aijh/web`
+- Stores: `auth-store`, `cv-store`, `profile-store` under `apps/web/src/stores/`
+- Login, register, app home, CV upload, and profile pages consume stores instead of local `useState` for shared session/domain state
+
+### Commands executed (actual)
+
+| Command | Result |
+| --- | --- |
+| `pnpm --filter @aijh/web typecheck` | pass |
+| `pnpm --filter @aijh/web build` | pass |
+
+---
+
 ## 2026-10-28 — Phase 6 hardening review (DoD)
 
 ### Verdict

@@ -1,38 +1,58 @@
-import Link from 'next/link';
+'use client';
+
+import { Box, Heading, Stack, Text } from '@chakra-ui/react';
+import { MarketingHeader } from '@/components/layout/site-header';
+import { PageShell } from '@/components/layout/page-shell';
+import { SlackButton } from '@/components/ui/slack-button';
 
 export default function LandingPage() {
   return (
-    <main className="shell">
-      <header className="site-header">
-        <div className="brand">ForgePath</div>
-        <nav className="nav" aria-label="Primary">
-          <Link className="btn btn-secondary" href="/login">
-            Sign in
-          </Link>
-          <Link className="btn btn-primary" href="/register">
-            Create account
-          </Link>
-        </nav>
-      </header>
-
-      <section className="hero" aria-labelledby="hero-title">
-        <div className="brand" style={{ fontSize: '1rem', opacity: 0.85 }}>
-          ForgePath
-        </div>
-        <h1 id="hero-title">Find roles that fit the evidence on your CV.</h1>
-        <p>
-          Upload your CV, review a structured profile, and match against permitted
-          job sources with explanations — not invented hiring odds.
-        </p>
-        <div className="hero-actions">
-          <Link className="btn btn-primary" href="/register">
-            Start free
-          </Link>
-          <Link className="btn btn-secondary" href="/login">
-            I already have an account
-          </Link>
-        </div>
-      </section>
-    </main>
+    <PageShell>
+      <MarketingHeader />
+      <Box
+        as="section"
+        aria-labelledby="hero-title"
+        minH="calc(100vh - 5rem)"
+        display="flex"
+        alignItems="center"
+        py={{ base: '10', md: '16' }}
+      >
+        <Stack gap="6" maxW="720px">
+          <Text
+            fontWeight="900"
+            fontSize="sm"
+            letterSpacing="0.08em"
+            textTransform="uppercase"
+            color="bg.brand"
+          >
+            ForgePath
+          </Text>
+          <Heading
+            id="hero-title"
+            as="h1"
+            fontSize={{ base: '3xl', md: '5xl' }}
+            lineHeight="1.05"
+            letterSpacing="-0.03em"
+            fontWeight="900"
+            color="fg.default"
+            maxW="14ch"
+          >
+            Find roles that fit the evidence on your CV.
+          </Heading>
+          <Text fontSize="lg" color="fg.muted" maxW="36rem">
+            Upload your CV, review a structured profile, and match against
+            permitted job sources with explanations — not invented hiring odds.
+          </Text>
+          <Stack direction={{ base: 'column', sm: 'row' }} gap="3" pt="2">
+            <SlackButton href="/register" variant="primary" size="lg">
+              Start free
+            </SlackButton>
+            <SlackButton href="/login" variant="secondary" size="lg">
+              I already have an account
+            </SlackButton>
+          </Stack>
+        </Stack>
+      </Box>
+    </PageShell>
   );
 }

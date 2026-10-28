@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@aijh/ai-runtime": "workspace:*",
+    "@aijh/application-assistance": "workspace:*",
     "@aijh/contracts": "workspace:*",
     "@aijh/cv-processing": "workspace:*",
     "@aijh/database": "workspace:*",

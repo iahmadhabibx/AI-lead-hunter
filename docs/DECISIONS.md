@@ -92,6 +92,20 @@
 - **Decision:** Versioned weighted scorer (`MATCH_SCORING_VERSION` 1.0.0); hard filters first; unknown component scores excluded from the weighted average; sponsorship stance only from explicit job-text signals (`offered` / `not_offered` / `unknown`). Persist full breakdown keyed by user + profile version + job + scoring version.
 - **Consequences:** Bumping scoring version requires a new persisted key and regression review; embeddings remain optional/out of MVP scoring.
 
+## ADR-014: Deterministic preference learning (no fine-tune)
+
+- **Status:** Accepted (Phase 4)
+- **Context:** Click/reject sets are too small and biased for model fine-tuning; users need transparent, resettable signals.
+- **Decision:** Rule-based `computeLearnedPreferences` from auditable events; versioned storage; explicit reset; never mutate CV facts or infer sensitive traits.
+- **Consequences:** Matching continues to treat explicit profile preferences as authoritative until a later intentional merge.
+
+## ADR-015: Template-grounded application drafts (no auto-submit)
+
+- **Status:** Accepted (Phase 5)
+- **Context:** LLM drafting can invent qualifications; automated submission is a non-goal.
+- **Decision:** Generate Markdown drafts only from approved profile evidence + job text; validate claims; require human approve; track `applied` as user-reported; store employer `applyUrl` only.
+- **Consequences:** Drafts may be stylistically plain; honesty over flourish.
+
 ## Unresolved
 
 - Default production Ollama model selection (size/quality tradeoff still open).

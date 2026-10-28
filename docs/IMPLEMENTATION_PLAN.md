@@ -76,13 +76,32 @@ Hard filters, weighted components, explanations, persisted breakdowns, save/reje
 
 See `docs/PROGRESS.md` and `docs/AI_AND_MATCHING.md`.
 
-### Phase 4 — Feedback learning
+### Phase 4 — Feedback learning ✅ PASS (verified 2026-10-28)
 
-Deterministic preference updates from events, reset UI (events already persisted in Phase 3).
+Deterministic preference updates from events + reset (events already persisted in Phase 3).
 
-### Phase 5 — Application assistance + tracking
+**Acceptance criteria**
 
-Grounded drafts, editor, application records, official apply URL only.
+- [x] Auditable feedback → transparent deterministic learned preferences (`PREFERENCE_LEARNING_VERSION` 1.0.0)
+- [x] Explicit profile preferences remain authoritative; CV facts never mutated
+- [x] Review (`GET /preferences/learned`) + recompute + reset APIs
+- [x] Unit tests for learning rules; integration covers recompute/reset
+
+See `docs/PROGRESS.md` and `docs/AI_AND_MATCHING.md`.
+
+### Phase 5 — Application assistance + tracking ✅ PASS (verified 2026-10-28)
+
+Grounded drafts, editable preview, export, provenance, approval, application tracking, official apply URL only. No automated submission.
+
+**Acceptance criteria**
+
+- [x] Evidence-grounded tailored CV, cover letter, application-answer drafts
+- [x] Factual claims validated against approved profile evidence; unsupported claims blocked from approve
+- [x] Editable previews, Markdown export, generation provenance, user approval
+- [x] Application tracking with official apply URL; never auto-submit
+- [x] Tests: unsupported claims, version tracking, ownership (IDOR), export
+
+See `docs/PROGRESS.md`.
 
 ### Phase 6 — Hardening + deployment
 

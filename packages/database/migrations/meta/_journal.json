@@ -36,6 +36,13 @@
       "when": 1761594400000,
       "tag": "0004_matching_feedback",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1761598000000,
+      "tag": "0005_preferences_applications",
+      "breakpoints": true
     }
   ]
 }

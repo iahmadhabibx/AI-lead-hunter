@@ -54,13 +54,46 @@ Long-running CV processing returns `{ documentId, taskId, status }` and clients 
 | POST | `/sources/discover` | yes | Enqueue discovery (`?sourceKey=` optional) → `{ taskId }` |
 | GET | `/sources/jobs` | yes | Active canonical jobs from ingested boards (empty if none) |
 
+## Phase 3 endpoints (matching / feedback events)
+
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/matches/run` | yes | Enqueue matching vs catalog |
+| GET | `/matches` | yes | List match results |
+| GET | `/matches/:id` | yes | Score breakdown + evidence |
+| POST | `/saved-jobs` | yes | Save job |
+| GET | `/saved-jobs` | yes | List saved |
+| DELETE | `/saved-jobs/:canonicalJobId` | yes | Unsave |
+| POST | `/matches/reject` | yes | Reject with reasons |
+| POST | `/feedback` | yes | Typed feedback event |
+| GET | `/feedback` | yes | List feedback events |
+
+## Phase 4 endpoints (learned preferences)
+
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| GET | `/preferences/learned` | yes | Active learned preferences (or null) |
+| POST | `/preferences/learned/recompute` | yes | Recompute from feedback events |
+| POST | `/preferences/learned/reset` | yes | Clear active learned preferences |
+
+## Phase 5 endpoints (applications / drafts)
+
+| Method | Path | Auth | Description |
+| --- | --- | --- | --- |
+| POST | `/applications` | yes | Create/track application (stores official apply URL) |
+| GET | `/applications` | yes | List applications |
+| GET | `/applications/:id` | yes | Application + document summaries |
+| PATCH | `/applications/:id/status` | yes | User-reported status (applied ≠ auto-submit) |
+| POST | `/applications/generate` | yes | Enqueue grounded draft generation |
+| GET | `/documents/:id` | yes | Editable draft preview + provenance |
+| PATCH | `/documents/:id` | yes | Edit draft markdown |
+| POST | `/documents/:id/approve` | yes | Approve (blocked if unsupported claims) |
+| GET | `/documents/:id/export` | yes | Markdown export download |
+
 ## Planned endpoints (later phases)
 
-- Preferences (beyond profile preferences block)
-- Search create/progress / match explanations
-- Save/unsave, feedback
-- Application drafts + tracking
 - Account export + deletion
+- Match/feed UI polish
 
 ## Pagination
 

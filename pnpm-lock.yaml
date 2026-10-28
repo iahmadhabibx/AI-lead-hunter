@@ -23,6 +23,9 @@ importers:
 
   apps/api:
     dependencies:
+      '@aijh/application-assistance':
+        specifier: workspace:*
+        version: link:../../packages/application-assistance
       '@aijh/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -32,6 +35,9 @@ importers:
       '@aijh/database':
         specifier: workspace:*
         version: link:../../packages/database
+      '@aijh/feedback':
+        specifier: workspace:*
+        version: link:../../packages/feedback
       '@aijh/job-connectors':
         specifier: workspace:*
         version: link:../../packages/job-connectors
@@ -148,6 +154,9 @@ importers:
       '@aijh/ai-runtime':
         specifier: workspace:*
         version: link:../../packages/ai-runtime
+      '@aijh/application-assistance':
+        specifier: workspace:*
+        version: link:../../packages/application-assistance
       '@aijh/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -193,6 +202,25 @@ importers:
         version: 2.1.9(@types/node@22.20.5)
 
   packages/ai-runtime:
+    dependencies:
+      '@aijh/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      zod:
+        specifier: ^3.24.1
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.5
+        version: 22.20.5
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.20.5)
+
+  packages/application-assistance:
     dependencies:
       '@aijh/contracts':
         specifier: workspace:*
@@ -276,6 +304,25 @@ importers:
       tsx:
         specifier: ^4.19.2
         version: 4.23.15
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@22.20.5)
+
+  packages/feedback:
+    dependencies:
+      '@aijh/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      zod:
+        specifier: ^3.24.1
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.5
+        version: 22.20.5
       typescript:
         specifier: ^5.7.3
         version: 5.9.3

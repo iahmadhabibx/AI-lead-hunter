@@ -55,9 +55,15 @@ RLS + `FORCE ROW LEVEL SECURITY` on all three; access via `withTenantContext`.
 | `saved_jobs` | User-saved catalog jobs (unique per user+job) |
 | `feedback_events` | Append-only interest/save/reject/… events with optional rejection reasons |
 
-## Later tables (designed; migrate in later phases)
+## Phase 4–5 tables (user-owned + RLS)
 
-users-owned: `preferences` (learned), `applications`, `generated_documents`
+| Table | Purpose |
+| --- | --- |
+| `learned_preferences` | Versioned deterministic preference summaries from feedback |
+| `applications` | Per-user job application tracking + official apply URL |
+| `generated_documents` | Versioned grounded drafts (CV / cover / answers) + provenance |
+
+## Later tables (designed; migrate in later phases)
 
 shared/catalog: `skills`, `job_skills`
 

@@ -11,9 +11,11 @@
     "test:integration": "vitest run --config vitest.integration.config.ts"
   },
   "dependencies": {
+    "@aijh/application-assistance": "workspace:*",
     "@aijh/contracts": "workspace:*",
     "@aijh/cv-processing": "workspace:*",
     "@aijh/database": "workspace:*",
+    "@aijh/feedback": "workspace:*",
     "@aijh/job-connectors": "workspace:*",
     "@aijh/observability": "workspace:*",
     "@aijh/security": "workspace:*",

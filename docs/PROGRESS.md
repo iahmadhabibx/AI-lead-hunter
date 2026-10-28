@@ -7,6 +7,55 @@ Standing rules for this file:
 - Record **actual commands and results**. Do not claim PASS from generated files alone.
 - A phase is complete only when features work, tests pass, and limitations are documented (`AGENTS.md` → Phase completion discipline).
 
+## 2026-10-28 — Phase 4 feedback learning + Phase 5 application assistance (DoD)
+
+### Verdict
+
+**Phase 4 PASS** and **Phase 5 PASS** (verified together). User request described application drafts while labeling “Phase 4”; plan order required feedback learning first, so both were implemented. No automated application submission.
+
+### Phase 4 evidence
+
+| Criterion | Evidence |
+| --- | --- |
+| Deterministic learned preferences | `@aijh/feedback` + `learned_preferences` |
+| Review / recompute / reset | `/preferences/learned*` |
+| CV facts untouched | Learning never writes profile versions |
+
+### Phase 5 evidence
+
+| Criterion | Evidence |
+| --- | --- |
+| Grounded CV / cover / answers | `@aijh/application-assistance` templates + claim validation |
+| Provenance + versions | `generated_documents` + worker `docs-generate` |
+| Editable preview / export / approve | `/documents/:id` PATCH, export, approve |
+| Tracking without auto-submit | `applications` + status `applied` policy text |
+| Tests | Unit (claims/export/learning) + integration ownership/export/approve |
+
+### Commands executed (actual)
+
+| Command | Result |
+| --- | --- |
+| `pnpm db:migrate` | pass — `0005_preferences_applications` |
+| `pnpm --filter @aijh/feedback test` | pass — **3** |
+| `pnpm --filter @aijh/application-assistance test` | pass — **3** |
+| `pnpm test` | pass |
+| `pnpm test:integration` | pass — **10** tests (incl. applications×2) |
+| `pnpm build` | pass |
+| `pnpm typecheck` | pass |
+
+### Limitations
+
+- Draft generation is template-grounded (deterministic); Ollama narrative polish not required for MVP honesty
+- Claim validator is heuristic (bullets / credential phrases / bold) — not a full NLP fact checker
+- Web UI for applications/preferences not built yet (API complete)
+- Learned preferences are not yet folded into the matching scorer automatically (explicit profile prefs remain source of truth)
+
+### Next
+
+Phase 6 — SaaS hardening (export/delete account, rate limits, backups, deployment runbook).
+
+---
+
 ## 2026-10-28 — Phase 3 matching engine (DoD)
 
 ### Verdict
@@ -46,7 +95,7 @@ Standing rules for this file:
 
 ### Next
 
-Phase 4 — deterministic preference updates from feedback events + review/reset UI.
+Phase 4–5 completed 2026-10-28; see that entry for Phase 6 next steps.
 
 ---
 

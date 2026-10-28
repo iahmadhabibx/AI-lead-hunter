@@ -8,10 +8,12 @@ import {
   type JobsDiscoverJobData,
 } from './job-ingest';
 import { handleJobsMatch, type JobsMatchJobData } from './match-jobs';
+import { handleDocsGenerate, type DocsGenerateJobData } from './docs-generate';
 
 const CV_PROCESS_QUEUE = 'cv-process';
 const JOBS_DISCOVER_QUEUE = 'jobs-discover';
 const JOBS_MATCH_QUEUE = 'jobs-match';
+const DOCS_GENERATE_QUEUE = 'docs-generate';
 
 async function main() {
   const env = parseAppEnv(process.env);
@@ -96,6 +98,15 @@ async function main() {
     { connection, concurrency: 2 },
   );
 
+  const docsWorker = new Worker<DocsGenerateJobData>(
+    DOCS_GENERATE_QUEUE,
+    async (job) => {
+      logger.info({ jobId: job.id, data: job.data }, 'Generating application drafts');
+      return handleDocsGenerate({ env, logger, data: job.data });
+    },
+    { connection, concurrency: 2 },
+  );
+
   cvWorker.on('failed', (job, err) => {
     logger.error({ jobId: job?.id, err }, 'CV job failed');
   });
@@ -105,9 +116,12 @@ async function main() {
   matchWorker.on('failed', (job, err) => {
     logger.error({ jobId: job?.id, err }, 'Jobs match failed');
   });
+  docsWorker.on('failed', (job, err) => {
+    logger.error({ jobId: job?.id, err }, 'Docs generate failed');
+  });
 
   logger.info(
-    'Worker started (heartbeat + cv-process + jobs-discover + jobs-match)',
+    'Worker started (heartbeat + cv-process + jobs-discover + jobs-match + docs-generate)',
   );
 
   const shutdown = async () => {
@@ -117,6 +131,7 @@ async function main() {
       cvWorker.close(),
       jobsWorker.close(),
       matchWorker.close(),
+      docsWorker.close(),
       heartbeatQueue.close(),
       jobsDiscoverQueue.close(),
     ]);

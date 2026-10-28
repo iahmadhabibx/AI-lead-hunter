@@ -61,3 +61,16 @@ Fixture: `tests/fixtures/sample-cv.docx` (demo CV text, not a real person's priv
 - Regression: hard-constraint violation cases in `@aijh/matching`
 - Unknown compensation/sponsorship never scored as positive
 - Integration: approve profile → seed jobs → `jobs.match` → persisted breakdowns → save/reject → feedback list
+
+## Phase 4 coverage targets
+
+- Deterministic preference learning rules (boost/demote/exclude)
+- Integration: feedback → recompute → reset
+
+## Phase 5 coverage targets
+
+- Unsupported claim detection vs evidence corpus
+- Grounded draft generation without invented employers/credentials
+- Document versioning + immutable approve
+- Ownership isolation (other user → 404)
+- Markdown export provenance headers

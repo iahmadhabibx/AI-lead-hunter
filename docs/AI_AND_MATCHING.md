@@ -64,13 +64,24 @@ Requirements upheld:
 - Match % is **not** interview/hiring probability
 - Embeddings not used for MVP scoring
 
-## Feedback events (Phase 3 partial; learning Phase 4)
+## Feedback learning (Phase 4 — implemented)
 
-Auditable `feedback_events` + `saved_jobs` + `audit_events` for save/unsave/reject and typed feedback. **Preference learning / reset UI is Phase 4** — events are stored now without automatic preference mutation.
+Package: `@aijh/feedback` (`PREFERENCE_LEARNING_VERSION` **1.0.0**).
 
-## Application assistance (Phase 5)
+- Deterministic rules from `feedback_events` (+ job catalog context): interest/save boosts titles/modes; rejection reasons demote work modes / exclude industries.
+- Persisted in `learned_preferences` (versioned; reset marks prior active as `reset`).
+- APIs: `GET/POST /preferences/learned`, `POST /preferences/learned/recompute`, `POST /preferences/learned/reset`.
+- Never mutates CV facts; never infers sensitive characteristics. Explicit profile preferences override learned signals at match time.
 
-Drafts grounded only in approved profile evidence + job description. Human edit/approve required. No automated submission.
+## Application assistance (Phase 5 — implemented)
+
+Package: `@aijh/application-assistance` (`DRAFT_GENERATION_VERSION` **1.0.0**).
+
+- Template-grounded drafts from **approved** profile evidence + job description only.
+- Claim validation flags unsupported assertions; approval blocked while unsupported claims remain.
+- Tables: `applications`, `generated_documents` (versioned per type).
+- Worker queue `docs-generate`. Export Markdown with provenance headers.
+- Status `applied` is **user-reported tracking only** — system never submits to employer portals.
 
 ## Evaluation
 

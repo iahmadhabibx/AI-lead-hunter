@@ -6,3 +6,5 @@ export * from './cv-documents';
 export * from './candidate-profiles';
 export * from './jobs';
 export * from './matching';
+export * from './preferences';
+export * from './applications';

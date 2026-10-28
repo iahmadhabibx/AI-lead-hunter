@@ -1,4 +1,5 @@
 import type { AppEnv } from '@aijh/contracts';
+import { resolveStorageRoot } from '@aijh/contracts';
 import {
   applications,
   auditEvents,
@@ -153,7 +154,7 @@ export async function handleAccountExport(opts: {
       };
     });
 
-    const storageRoot = path.resolve(env.STORAGE_ROOT);
+    const storageRoot = resolveStorageRoot(env.STORAGE_ROOT);
     const exportDir = path.join(storageRoot, data.userId, 'exports');
     await mkdir(exportDir, { recursive: true, mode: 0o700 });
     const filename = `export-${data.taskId}.json`;
@@ -211,7 +212,7 @@ export async function handleAccountDelete(opts: {
     });
 
     // Delete private files first
-    const storageRoot = path.resolve(env.STORAGE_ROOT);
+    const storageRoot = resolveStorageRoot(env.STORAGE_ROOT);
     const userDir = path.join(storageRoot, data.userId);
     const relative = path.relative(storageRoot, path.resolve(userDir));
     if (!relative.startsWith('..') && !path.isAbsolute(relative)) {

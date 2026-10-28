@@ -6,6 +6,7 @@ import {
   Box,
   Field,
   Heading,
+  HStack,
   Input,
   Stack,
   Text,
@@ -74,9 +75,14 @@ export default function CvUploadPage() {
     <PageShell>
       <AppHeader
         right={
-          <SlackButton href="/app/profile" variant="secondary">
-            Profile
-          </SlackButton>
+          <HStack gap="2">
+            <SlackButton href="/app/matches" variant="primary">
+              Matches
+            </SlackButton>
+            <SlackButton href="/app/profile" variant="secondary">
+              Profile
+            </SlackButton>
+          </HStack>
         }
       />
       <Heading as="h1" fontSize={{ base: '2xl', md: '3xl' }} fontWeight="900" mb="1">

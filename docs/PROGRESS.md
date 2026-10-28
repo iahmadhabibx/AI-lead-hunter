@@ -7,6 +7,65 @@ Standing rules for this file:
 - Record **actual commands and results**. Do not claim PASS from generated files alone.
 - A phase is complete only when features work, tests pass, and limitations are documented (`AGENTS.md` → Phase completion discipline).
 
+## 2026-10-28 — Fix discover RLS (unexpected error on Discover jobs)
+
+### Problem
+
+`POST /sources/discover` inserted `background_tasks` without `withTenantContext`, so Postgres RLS rejected the write and the API returned generic `INTERNAL_ERROR` / “An unexpected error occurred”.
+
+### Fix
+
+Wrap discover task creation + enqueue in `withTenantContext` (same pattern as match/CV).
+
+### Verified
+
+`POST /sources/discover` → `200` `{ taskId, status: "queued" }` after fix.
+
+---
+
+## 2026-10-28 — Matches UI + local job sources
+
+### Done
+
+- Web: `/app/matches` with discover → run matching → list/explain/save/reject
+- Zustand `matches-store` polls `/tasks/:id` for discover/match jobs
+- App home / CV / profile link into Matches
+- Local `JOB_SOURCES_JSON` demo boards: Greenhouse `stripe` + `gitlab` (not global search)
+
+### Commands executed (actual)
+
+| Command | Result |
+| --- | --- |
+| `pnpm --filter @aijh/web typecheck` | pass |
+
+### Limitations
+
+- Discovery depends on live public board APIs; large boards can take minutes
+- Application-draft UI still not built (API exists from Phase 5)
+
+---
+
+## 2026-10-28 — Fix shared CV storage path (API vs worker)
+
+### Problem
+
+`STORAGE_ROOT=./uploads` resolved per process cwd → API wrote `apps/api/uploads`, worker read `apps/worker/uploads` → `ENOENT` on CV process.
+
+### Fix
+
+- `resolveStorageRoot()` in `@aijh/contracts` resolves relative paths from the monorepo root
+- Default / `.env` / `.env.example`: `STORAGE_ROOT=.local/uploads`
+- API `StorageService` + worker CV/account jobs use the helper
+
+### Commands executed (actual)
+
+| Command | Result |
+| --- | --- |
+| `pnpm --filter @aijh/contracts test` | pass (incl. storage-path **3**) |
+| `pnpm --filter @aijh/api test -- src/storage/storage.path.test.ts` | pass |
+
+---
+
 ## 2026-10-28 — Web client state: Zustand
 
 ### Done

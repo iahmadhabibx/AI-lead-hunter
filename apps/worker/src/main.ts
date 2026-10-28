@@ -1,4 +1,4 @@
-import { parseAppEnv } from '@aijh/contracts';
+import { parseAppEnv, resolveStorageRoot } from '@aijh/contracts';
 import { createLogger } from '@aijh/observability';
 import { Queue, Worker } from 'bullmq';
 import IORedis from 'ioredis';
@@ -153,6 +153,7 @@ async function main() {
   });
 
   logger.info(
+    { storageRoot: resolveStorageRoot(env.STORAGE_ROOT) },
     'Worker started (cv, discover, match, docs, account export/delete)',
   );
 

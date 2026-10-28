@@ -1,4 +1,6 @@
 export * from './env';
+export * from './storage-path';
+
 export * from './auth';
 export * from './errors';
 export * from './tasks';

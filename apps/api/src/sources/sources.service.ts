@@ -4,7 +4,12 @@ import {
   type JobSourceConfig,
 } from '@aijh/contracts';
 import { createConnectorRegistry } from '@aijh/job-connectors';
-import { backgroundTasks, canonicalJobs, jobSources } from '@aijh/database';
+import {
+  backgroundTasks,
+  canonicalJobs,
+  jobSources,
+  withTenantContext,
+} from '@aijh/database';
 import { desc, eq, sql } from 'drizzle-orm';
 import { AppHttpException } from '../common/app-http.exception';
 import { ConfigService } from '../config/config.service';
@@ -83,27 +88,29 @@ export class SourcesService {
       );
     }
 
-    const [task] = await this.dbService.db
-      .insert(backgroundTasks)
-      .values({
-        userId,
-        type: 'jobs.discover',
-        status: 'queued',
-        payload: { sourceKey: sourceKey ?? null },
-      })
-      .returning();
+    return withTenantContext(this.dbService.db, userId, async (tx) => {
+      const [task] = await tx
+        .insert(backgroundTasks)
+        .values({
+          userId,
+          type: 'jobs.discover',
+          status: 'queued',
+          payload: { sourceKey: sourceKey ?? null },
+        })
+        .returning();
 
-    if (!task) {
-      throw new AppHttpException('INTERNAL_ERROR', 'Failed to create task');
-    }
+      if (!task) {
+        throw new AppHttpException('INTERNAL_ERROR', 'Failed to create task');
+      }
 
-    await this.queues.enqueueJobsDiscover({
-      sourceKey,
-      triggeredBy: userId,
-      taskId: task.id,
+      await this.queues.enqueueJobsDiscover({
+        sourceKey,
+        triggeredBy: userId,
+        taskId: task.id,
+      });
+
+      return { taskId: task.id, status: 'queued' as const };
     });
-
-    return { taskId: task.id, status: 'queued' as const };
   }
 
   async listJobs(limit = 20) {

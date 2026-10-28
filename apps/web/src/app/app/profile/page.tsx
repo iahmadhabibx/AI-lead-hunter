@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect } from 'react';
 import type { CandidateProfilePayload } from '@aijh/contracts';
-import { Box, Field, Heading, Input, Stack, Text } from '@chakra-ui/react';
+import { Box, Field, Heading, HStack, Input, Stack, Text } from '@chakra-ui/react';
 import { AppHeader } from '@/components/layout/site-header';
 import { PageShell } from '@/components/layout/page-shell';
 import { SlackButton } from '@/components/ui/slack-button';
@@ -96,9 +96,14 @@ export default function ProfileReviewPage() {
     <PageShell>
       <AppHeader
         right={
-          <SlackButton href="/app/cv" variant="secondary">
-            Upload CV
-          </SlackButton>
+          <HStack gap="2">
+            <SlackButton href="/app/matches" variant="primary">
+              Matches
+            </SlackButton>
+            <SlackButton href="/app/cv" variant="secondary">
+              Upload CV
+            </SlackButton>
+          </HStack>
         }
       />
       <Heading as="h1" fontSize={{ base: '2xl', md: '3xl' }} fontWeight="900" mb="1">

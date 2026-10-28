@@ -13,7 +13,9 @@ export const AppEnvSchema = z.object({
   DATABASE_URL: z.string().min(1),
   DB_ADMIN_URL: z.string().min(1).optional(),
   REDIS_URL: z.string().min(1),
-  STORAGE_ROOT: z.string().min(1).default('./uploads'),
+  /** Relative paths resolve from the monorepo root (shared by API + worker). */
+  STORAGE_ROOT: z.string().min(1).default('.local/uploads'),
+
   MAX_UPLOAD_BYTES: z.coerce.number().int().positive().default(10 * 1024 * 1024),
   AI_PROVIDER: z.enum(['mock', 'ollama']).default('mock'),
   OLLAMA_BASE_URL: z.string().url().default('http://127.0.0.1:11434'),

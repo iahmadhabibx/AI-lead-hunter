@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { resolveStorageRoot } from '@aijh/contracts';
 import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -9,7 +10,7 @@ export class StorageService {
   constructor(@Inject(ConfigService) private readonly config: ConfigService) {}
 
   root(): string {
-    return path.resolve(this.config.env.STORAGE_ROOT);
+    return resolveStorageRoot(this.config.env.STORAGE_ROOT);
   }
 
   hashBuffer(buffer: Buffer): string {

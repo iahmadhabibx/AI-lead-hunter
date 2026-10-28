@@ -33,14 +33,21 @@ const styles: Record<Variant, ButtonProps> = {
   },
 };
 
+function isExternalHref(href: string): boolean {
+  return /^(https?:\/\/|mailto:|tel:)/i.test(href);
+}
+
 type Props = Omit<ButtonProps, 'variant'> & {
   variant?: Variant;
   href?: string;
+  /** Force new-tab behavior for external links (default true when href is absolute). */
+  openInNewTab?: boolean;
 };
 
 export function SlackButton({
   variant = 'primary',
   href,
+  openInNewTab,
   children,
   ...props
 }: Props) {
@@ -53,6 +60,21 @@ export function SlackButton({
   };
 
   if (href) {
+    if (isExternalHref(href)) {
+      const newTab = openInNewTab !== false;
+      return (
+        <Button asChild {...common}>
+          <a
+            href={href}
+            target={newTab ? '_blank' : undefined}
+            rel={newTab ? 'noopener noreferrer' : undefined}
+          >
+            {children}
+          </a>
+        </Button>
+      );
+    }
+
     return (
       <Button asChild {...common}>
         <Link href={href}>{children}</Link>

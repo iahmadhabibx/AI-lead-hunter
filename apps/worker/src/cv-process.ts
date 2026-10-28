@@ -8,6 +8,7 @@ import {
   withTenantContext,
 } from '@aijh/database';
 import type { AppEnv } from '@aijh/contracts';
+import { resolveStorageRoot } from '@aijh/contracts';
 import type { Logger } from '@aijh/observability';
 import { and, desc, eq } from 'drizzle-orm';
 import { readFile } from 'node:fs/promises';
@@ -27,7 +28,7 @@ export async function handleCvProcessJob(options: {
   const { env, logger, data } = options;
   const db = createDb(env.DATABASE_URL);
   const ai = createDefaultAiRuntime(env);
-  const storageRoot = path.resolve(env.STORAGE_ROOT);
+  const storageRoot = resolveStorageRoot(env.STORAGE_ROOT);
 
   try {
     await withTenantContext(db, data.userId, async (tx) => {

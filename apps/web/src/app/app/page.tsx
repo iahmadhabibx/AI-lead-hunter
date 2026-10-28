@@ -80,7 +80,10 @@ export default function AppHomePage() {
         </Box>
       ) : null}
       <Stack direction={{ base: 'column', sm: 'row' }} gap="3" mb="8">
-        <SlackButton href="/app/cv" variant="primary">
+        <SlackButton href="/app/matches" variant="primary">
+          Find job matches
+        </SlackButton>
+        <SlackButton href="/app/cv" variant="secondary">
           Upload CV
         </SlackButton>
         <SlackButton href="/app/profile" variant="secondary">
@@ -97,8 +100,9 @@ export default function AppHomePage() {
         p="5"
         color="fg.muted"
       >
-        Complete your CV profile to unlock matching against permitted job
-        sources. Match scores are suitability weights — not hiring predictions.
+        Discover jobs from configured employer boards, then match them to your
+        approved profile. Suitability scores are weighted comparisons — not
+        hiring predictions.
       </Box>
     </PageShell>
   );

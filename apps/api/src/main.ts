@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
-import { parseAppEnv } from '@aijh/contracts';
+import { parseAppEnv, resolveStorageRoot } from '@aijh/contracts';
 import { createLogger } from '@aijh/observability';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/all-exceptions.filter';
@@ -49,7 +49,13 @@ async function bootstrap() {
   }
 
   await app.listen(env.API_PORT);
-  logger.info({ port: env.API_PORT }, 'API listening');
+  logger.info(
+    {
+      port: env.API_PORT,
+      storageRoot: resolveStorageRoot(env.STORAGE_ROOT),
+    },
+    'API listening',
+  );
 }
 
 bootstrap().catch((err: unknown) => {

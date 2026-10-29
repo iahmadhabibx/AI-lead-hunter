@@ -97,10 +97,10 @@ export default function ProfileReviewPage() {
       <AppHeader
         right={
           <HStack gap="2">
-            <SlackButton href="/app/matches" variant="primary">
-              Matches
+            <SlackButton href="/app" variant="primary">
+              Jobs
             </SlackButton>
-            <SlackButton href="/app/cv" variant="secondary">
+            <SlackButton href="/app" variant="secondary">
               Upload CV
             </SlackButton>
           </HStack>

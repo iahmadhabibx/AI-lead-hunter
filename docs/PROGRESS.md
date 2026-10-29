@@ -7,6 +7,81 @@ Standing rules for this file:
 - Record **actual commands and results**. Do not claim PASS from generated files alone.
 - A phase is complete only when features work, tests pass, and limitations are documented (`AGENTS.md` → Phase completion discipline).
 
+## 2026-10-29 — Empty results until user searches
+
+### Done
+
+- `/app` lands with no job rows; `clearResults()` on mount; no auto `refreshFeed`
+- Results + counts stay gated on `hasSearched` until **Find jobs** / Enter
+- User search calls `refreshFeed({ forceDiscover: true })` (configured Greenhouse/Lever boards only — not LinkedIn/Indeed)
+
+### Commands executed (actual)
+
+| Command | Result |
+| --- | --- |
+| `pnpm --filter @aijh/web typecheck` | pass |
+
+---
+
+## 2026-10-29 — Fix Find jobs stuck on discover timeout
+
+### Problem
+
+`refreshFeed` always waited for full Greenhouse rediscovery (Stripe+GitLab = ~900 jobs) before matching. UI timed out with 0 matches even though the catalog already had jobs.
+
+### Fix
+
+- Match existing catalog first; rediscover only when catalog is empty (or `forceDiscover`)
+- Local `JOB_SOURCES_JSON` default trimmed to GitLab for faster optional ingest
+
+### Commands executed (actual)
+
+| Command | Result |
+| --- | --- |
+| `pnpm --filter @aijh/web typecheck` | pass |
+
+---
+
+## 2026-10-28 — Main workspace aligned to Find-jobs layout
+
+### Done
+
+- `/app` toolbar: Find jobs, Draft CV + cover, Stop run, Run log, profile
+- CV row: Upload my CV / My profile + status text
+- Job filter: keywords, exclude-in-title, max age, title-only, Save & search
+- Split pane: results table (Status/Posted/Company/Role/Location) + detail actions
+- Run log panel; drafts via `POST /applications` + `/applications/generate`
+
+### Not wired (honest)
+
+- Gmail drafts, auto-run scheduler, per-user AI model picker, salary column (no reliable salary field yet)
+
+### Commands executed (actual)
+
+| Command | Result |
+| --- | --- |
+| `pnpm --filter @aijh/web typecheck` | pass |
+
+---
+
+## 2026-10-28 — Main workspace: upload CTA + filtered job table
+
+### Done
+
+- `/app` is the hub: welcome + **Upload CV and get started** opens the file picker inline
+- After a profile exists: filters (status/company/role/location) + table columns Status, Posted, Company, Role, Location (+ Apply)
+- `refreshFeed()` discovers + matches in one action; auto-runs when an approved profile has an empty feed
+- `/app/matches` redirects to `/app`
+- Match list API includes `publishedAt` / `lastSeenAt` for Posted
+
+### Commands executed (actual)
+
+| Command | Result |
+| --- | --- |
+| `pnpm --filter @aijh/web typecheck` | pass |
+
+---
+
 ## 2026-10-28 — Fix discover RLS (unexpected error on Discover jobs)
 
 ### Problem

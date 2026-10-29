@@ -99,6 +99,8 @@ export class MatchService {
                   workMode: job.workMode,
                   applyUrl: job.applyUrl,
                   status: job.status,
+                  publishedAt: job.publishedAt?.toISOString() ?? null,
+                  lastSeenAt: job.lastSeenAt.toISOString(),
                 }
               : null,
             updatedAt: r.updatedAt.toISOString(),

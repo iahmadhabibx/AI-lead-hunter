@@ -76,8 +76,8 @@ export default function CvUploadPage() {
       <AppHeader
         right={
           <HStack gap="2">
-            <SlackButton href="/app/matches" variant="primary">
-              Matches
+            <SlackButton href="/app" variant="primary">
+              Jobs
             </SlackButton>
             <SlackButton href="/app/profile" variant="secondary">
               Profile

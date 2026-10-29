@@ -30,6 +30,8 @@ type CvState = {
   reset: () => void;
   upload: (file: File) => Promise<void>;
   refreshStatus: () => Promise<void>;
+  /** Upload then poll until processing succeeds or fails. */
+  uploadAndWait: (file: File) => Promise<'succeeded' | 'failed'>;
 };
 
 export const useCvStore = create<CvState>((set, get) => ({
@@ -88,5 +90,23 @@ export const useCvStore = create<CvState>((set, get) => ({
       });
       throw err;
     }
+  },
+
+  uploadAndWait: async (file) => {
+    await get().upload(file);
+    for (let i = 0; i < 180; i++) {
+      await get().refreshStatus();
+      const status = get().task?.status;
+      if (status === 'succeeded') return 'succeeded';
+      if (status === 'failed') {
+        throw new Error(
+          get().task?.errorMessage ||
+            get().doc?.errorMessage ||
+            'CV processing failed',
+        );
+      }
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+    throw new Error('Timed out waiting for CV processing');
   },
 }));

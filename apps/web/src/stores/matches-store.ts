@@ -27,6 +27,8 @@ export type MatchListItem = {
     workMode: string;
     applyUrl: string;
     status: string;
+    publishedAt?: string | null;
+    lastSeenAt?: string | null;
   } | null;
   updatedAt: string;
 };
@@ -80,12 +82,15 @@ type MatchesState = {
   error: string | null;
   success: string | null;
   clearMessages: () => void;
+  clearResults: () => void;
   loadSources: () => Promise<void>;
   loadMatches: () => Promise<void>;
   loadSaved: () => Promise<void>;
   bootstrap: () => Promise<void>;
   discover: () => Promise<void>;
   runMatch: (limit?: number) => Promise<void>;
+  /** Match against existing catalog; rediscover only when empty or forceDiscover. */
+  refreshFeed: (opts?: { forceDiscover?: boolean }) => Promise<void>;
   loadMatchDetail: (id: string) => Promise<void>;
   clearSelected: () => void;
   saveJob: (canonicalJobId: string, matchResultId?: string) => Promise<void>;
@@ -122,6 +127,15 @@ export const useMatchesStore = create<MatchesState>((set, get) => ({
   success: null,
 
   clearMessages: () => set({ error: null, success: null }),
+
+  clearResults: () =>
+    set({
+      matches: [],
+      selected: null,
+      success: null,
+      error: null,
+      pending: false,
+    }),
 
   loadSources: async () => {
     const data = await apiFetch<{
@@ -182,7 +196,7 @@ export const useMatchesStore = create<MatchesState>((set, get) => ({
       await get().loadSources();
       set({
         pending: false,
-        success: 'Job discovery finished. Run matching to score against your profile.',
+        success: 'Job discovery finished.',
       });
     } catch (err) {
       set({
@@ -213,6 +227,61 @@ export const useMatchesStore = create<MatchesState>((set, get) => ({
       set({
         pending: false,
         error: err instanceof Error ? err.message : 'Matching failed',
+      });
+      throw err;
+    }
+  },
+
+  refreshFeed: async (opts) => {
+    set({ pending: true, error: null, success: null });
+    try {
+      await get().loadSources();
+      const catalogCount = get().catalogCount;
+      const forceDiscover = opts?.forceDiscover === true;
+      // Full board ingest (Stripe/GitLab) can take many minutes and block matching.
+      // Prefer scoring the existing catalog; only discover when empty or forced.
+      const needsDiscover =
+        get().sources.length > 0 && (forceDiscover || catalogCount === 0);
+
+      if (needsDiscover) {
+        const queued = await apiFetch<{ taskId: string; status: string }>(
+          '/sources/discover',
+          { method: 'POST' },
+        );
+        const discoverTask = await pollTask(queued.taskId);
+        if (discoverTask.status === 'failed') {
+          throw new Error(
+            discoverTask.errorMessage || 'Job discovery failed',
+          );
+        }
+        await get().loadSources();
+      }
+
+      if (get().catalogCount === 0) {
+        throw new Error(
+          'No jobs in the catalog yet. Configure JOB_SOURCES_JSON and retry Find jobs.',
+        );
+      }
+
+      const matchQueued = await apiFetch<{ taskId: string; status: string }>(
+        '/matches/run?limit=200',
+        { method: 'POST' },
+      );
+      const matchTask = await pollTask(matchQueued.taskId);
+      if (matchTask.status === 'failed') {
+        throw new Error(matchTask.errorMessage || 'Matching failed');
+      }
+      await Promise.all([get().loadMatches(), get().loadSaved()]);
+      set({
+        pending: false,
+        success: needsDiscover
+          ? 'Job feed updated (discovered + matched).'
+          : `Matched against ${get().catalogCount} catalog jobs.`,
+      });
+    } catch (err) {
+      set({
+        pending: false,
+        error: err instanceof Error ? err.message : 'Failed to refresh feed',
       });
       throw err;
     }
